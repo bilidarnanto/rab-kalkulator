@@ -6,7 +6,7 @@ vendor EcoPower ID (real, update 2026-08) — lihat RESEARCH.md untuk verifikasi
 pasar & analisis optimasi. Jalankan ulang ``python3 build.py`` setelah katalog
 diperbarui.
 """
-import json
+import datetime, json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -58,7 +58,21 @@ TEMPLATE = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kalkulator RAB — Campervan · Motorhome · Food Truck · PLTS</title>
-<meta name="description" content="Kalkulator RAB konversi campervan, motorhome, food truck dan instalasi PLTS. Harga real katalog vendor (Aug 2026) + verifikasi pasar Okt 2026.">
+<meta name="description" content="Hitung RAB konversi campervan, motorhome, food truck dan instalasi PLTS secara online. Harga real katalog vendor (Aug 2026), rincian per komponen, hasil bisa dikirim ke admin WhatsApp.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="EcoPower ID">
+<meta name="theme-color" content="#275b31">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kalkulator RAB — Campervan · Motorhome · Food Truck · PLTS">
+<meta property="og:description" content="Konfigurasi online, angka real per komponen, estimasi RAB otomatis + kirim ke admin via WhatsApp.">
+<meta property="og:url" content="https://bilidarnanto.github.io/rab-kalkulator/">
+<meta property="og:site_name" content="Kalkulator RAB">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://bilidarnanto.github.io/rab-kalkulator/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Kalkulator RAB — EcoPower ID","url":"https://bilidarnanto.github.io/rab-kalkulator/","applicationCategory":"BusinessApplication","operatingSystem":"Any","inLanguage":"id","description":"Kalkulator RAB konversi campervan, motorhome, food truck dan instalasi PLTS","offers":{"@type":"Offer","price":"0","priceCurrency":"IDR"}}
+</script>
 <style>
 :root{--bch:#275b31;--acc:#2f7d3f;--mut:#64748b;--line:#e2e8f0;--bg:#f8fafc}
 *{box-sizing:border-box}
@@ -505,7 +519,8 @@ function rabHtml(){
     if(n.length)h+='<h3>Catatan optimasi komponen</h3><div class="note">'+n.map(x=>'• '+esc(x)).join('<br>')+'</div>';
   }
   h+='<p class="mut">Estimasi berlaku 30 hari; harga final diverifikasi admin sebelum penawaran resmi.</p>'+
-     '<button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button>';
+     '<button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button> '+
+     '<button class="btn no-print" onclick="kirimWa()">📱 Kirim estimasi ke Admin (WhatsApp)</button>';
   return h;
 }
 function update(){$('#rabOut').innerHTML=rabHtml();updateEst();}
@@ -545,9 +560,39 @@ $('#btnPlts').onclick=()=>{
   h+=summLine('Grand total','<b>'+fmt(t.total)+'</b>','grand');
   const n=optimNotes(plts);
   if(n.length)h+='<h3>Catatan optimasi komponen</h3><div class="note">'+n.map(x=>'• '+esc(x)).join('<br>')+'</div>';
-  h+='<p class="mut"><button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button></p>';
+  h+='<p class="mut"><button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button> '+
+     '<button class="btn no-print" onclick="kirimWa()">📱 Kirim ke Admin (WhatsApp)</button></p>';
   $('#pltsOut').innerHTML=h;
 };
+
+/* ===== WhatsApp admin ===== */
+const WA_PHONE='6285334398681';
+function waText(){
+  const {lines,plts}=buildRabLines(S);
+  if(!lines.length)return null;
+  const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
+  const tot=adv?adv.grand:simpleTotals(lines).total;
+  const nm=c=>A_MAP[c]?A_MAP[c].name:c;
+  const jenis={campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck',plts:'PLTS'}[S.vehicleType]||'-';
+  const akt=(
+    S.vehicleType==='plts'?[]:['Tipe: '+jenis,
+    S.packageCode?'Paket: '+nm(S.packageCode):'',
+    S.layoutCode?'Layout: '+nm(S.layoutCode):'',
+    S.materialCode?'Material: '+nm(S.materialCode):'',
+    S.addonCodes.length?'Add-on: '+S.addonCodes.map(nm).join(', '):'']
+  );
+  if((S.includePlts||S.vehicleType==='plts')&&plts)akt.push(
+    'PLTS: '+plts.pWp+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp), baterai '+
+    plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh, inverter '+num(plts.inverter.specs,'watts')+' W, MPPT '+num(plts.scc.specs,'amps')+' A');
+  akt.push('Estimasi grand total: '+fmt(tot)+' (berlaku 30 hari)');
+  return 'Halo EcoPower ID, saya baru memakai kalkulator RAB online.\n'+akt.join('\n')+
+    '\nMohon info harga final & jadwal produksinya. Terima kasih.';
+}
+function kirimWa(){
+  const t=waText();
+  if(!t){alert('Susun dulu paket / add-on / kebutuhan listrik, lalu kirim.');return;}
+  window.open('https://wa.me/'+WA_PHONE+'?text='+encodeURIComponent(t),'_blank','noopener,noreferrer');
+}
 
 renderApls('#apls'); renderApls('#apls2');
 S.sunIncome=Number(S.sunIncome)||4.5;
@@ -560,4 +605,14 @@ bindManual(); renderAll(); renderCat(); updateEst();
 html_out = TEMPLATE.replace("__DATA__", json.dumps(DATA, ensure_ascii=False, separators=(",", ":")))
 out = ROOT / "index.html"
 out.write_text(html_out, encoding="utf-8")
+
+BASE = "https://bilidarnanto.github.io/rab-kalkulator/"
+(ROOT / "robots.txt").write_text(
+    "User-agent: *\nAllow: /\nSitemap: " + BASE + "sitemap.xml\n", encoding="utf-8")
+d = datetime.date.today().isoformat()
+(ROOT / "sitemap.xml").write_text(
+    '<?xml version="1.0" encoding="UTF-8"?>\n'
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    f'  <url><loc>{BASE}</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>\n'
+    '</urlset>\n', encoding="utf-8")
 print("wrote", out, len(html_out), "bytes")
