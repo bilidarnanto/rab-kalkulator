@@ -34,15 +34,27 @@ APPLIANCES = [
     ("APL-EXHAUST", "Exhaust / Blower Dapur", 200, 6),
 ]
 
+AP_EN = {
+    "APL-LAMP": "LED lights", "APL-FAN": "Fan", "APL-TV": "TV / monitor",
+    "APL-FRIDGE": "12V refrigerator", "APL-PUMP": "Water pump", "APL-LAPTOP": "Laptop",
+    "APL-PHONE": "Phone / gadget", "APL-AC": "Air conditioner (½–¾ PK)",
+    "APL-RICECOOKER": "Rice cooker", "APL-MICROWAVE": "Microwave",
+    "APL-WATERHEATER": "Water heater", "APL-FRYER": "Deep fryer",
+    "APL-GRILL": "Grill / barbecue", "APL-COFFEE": "Coffee machine",
+    "APL-REFRIGDISPLAY": "Display refrigerator", "APL-BLENDER": "Blender",
+    "APL-TOASTER": "Toaster / small oven", "APL-FREEZER": "Freezer",
+    "APL-EXHAUST": "Kitchen exhaust / blower",
+}
+
 DATA = {
     "components": [
         {
-            "code": c["code"], "name": c["nameId"], "category": c["category"],
+            "code": c["code"], "name": c["nameId"], "nameEn": c.get("nameEn") or "", "category": c["category"],
             "unit": c["unit"], "price": c["price"], "specs": c.get("specs") or {},
         }
         for c in CAT
     ],
-    "appliances": [{"code": a, "name": n, "watts": w, "hours": h} for (a, n, w, h) in APPLIANCES],
+    "appliances": [{"code": a, "name": n, "nameEn": AP_EN.get(a, n), "watts": w, "hours": h} for (a, n, w, h) in APPLIANCES],
     "cfg": {
         "marginPct": 15, "ppnPct": 11, "includePpn": True,
         "laborRate": 75000, "hoursPerDay": 8,
@@ -457,7 +469,7 @@ function renderVeh(){
 }
 
 function fillSelect(sel,list,cur,ph){
-  sel.innerHTML='<option value="">'+ph+'</option>'+list.map(c=>'<option value="'+c.code+'">'+esc(c.name)+' — '+fmt(c.price)+'</option>').join('');
+  sel.innerHTML='<option value="">'+ph+'</option>'+list.map(c=>'<option value="'+c.code+'">'+esc(tn(c))+' — '+fmt(c.price)+'</option>').join('');
   sel.value=list.some(c=>c.code===cur)?cur:'';
 }
 function renderSteps(){
@@ -488,7 +500,7 @@ function renderAddons(){
   for(const c of list){
     const row=document.createElement('div');row.className='chk';
     row.innerHTML='<input type="checkbox" '+(S.addonCodes.includes(c.code)?'checked':'')+
-      '><div><b>'+esc(c.name)+'</b><div class="mut">'+fmt(c.price)+' / '+esc(c.unit)+' · '+esc(c.code)+'</div></div>';
+      '><div><b>'+esc(tn(c))+'</b><div class="mut">'+fmt(c.price)+' / '+esc(c.unit)+' · '+esc(c.code)+'</div></div>';
     row.querySelector('input').onchange=e=>{
       S.addonCodes=S.addonCodes.filter(x=>x!==c.code);
       if(e.target.checked)S.addonCodes.push(c.code);
@@ -504,7 +516,7 @@ function renderApls(id){
   for(const a of DATA.appliances){
     const st=S.appliances[a.code];
     box.insertAdjacentHTML('beforeend',
-      '<div class="apl"><span class="nm">'+esc(a.name)+'</span><span class="w">'+a.watts+' W</span>'+
+      '<div class="apl"><span class="nm">'+esc(tn(a))+'</span><span class="w">'+a.watts+' W</span>'+
       '<input type="number" min="0" value="'+(st&&st.qty>0?st.qty:0)+'" data-q="'+a.code+'" title="unit">'+
       '<span class="w">unit ×</span>'+
       '<input type="number" min="0" step="0.5" value="'+(st&&st.hours>0?st.hours:a.hours)+'" data-h="'+a.code+'" title="'+T('jam/hari|hours/day')+'">'+
@@ -556,7 +568,7 @@ function rabHtml(){
     const gkT=({STRUKTUR:'Struktur|Structure',INTERIOR:'Interior',PERALATAN:'Peralatan|Equipment',PLTS:'PLTS',LISTRIK:'Listrik|Electrical',PLUMBING:'Plumbing',JASA:'Jasa|Services'})[gk]||gk;
     h+='<tr><td colspan="4" class="gw" style="font-weight:700">'+T(gkT)+'</td><td class="r" style="font-weight:700">'+fmt(g.reduce((a,L)=>a+L.subtotal,0))+'</td></tr>';
     for(const L of g){
-      h+='<tr><td>'+esc(L.name)+'<div class="mut">'+esc(L.code)+(L.spec?' · '+esc(L.spec):'')+'</div></td>'+
+      h+='<tr><td>'+esc(tn(L.name))+'<div class="mut">'+esc(L.code)+(L.spec?' · '+esc(L.spec):'')+'</div></td>'+
         '<td class="r">'+fmt(L.price)+'</td><td class="r">'+L.qty+'</td><td class="r mut">'+esc(L.unit)+'</td><td class="r">'+fmt(L.subtotal)+'</td></tr>';
     }
   }
@@ -610,8 +622,8 @@ function renderCat(){
   box.innerHTML='<div class="opt">'+cats.map((c,i)=>'<label><input type="radio" name="cf" value="'+c+'" '+(i===0?'checked':'')+'>'+c+'</label>').join('')+'</div>';
   const draw=()=>{
     const cat=box.querySelector('input[type=radio]:checked')?.value||'ALL', q=$('#catQ').value.toLowerCase();
-    $('#catBody').innerHTML=C.filter(c=>(cat==='ALL'||c.category===cat)&&(!q||c.name.toLowerCase().includes(q)||c.code.toLowerCase().includes(q)))
-      .map(c=>'<tr><td class="mut">'+esc(c.code)+'</td><td class="r">'+fmt(c.price)+'</td><td class="mut">'+esc(c.unit)+'</td><td>'+esc(c.name)+'</td><td class="mut">'+esc(c.category)+'</td></tr>').join('');
+    $('#catBody').innerHTML=C.filter(c=>(cat==='ALL'||c.category===cat)&&(!q||c.name.toLowerCase().includes(q)||(c.nameEn||'').toLowerCase().includes(q)||c.code.toLowerCase().includes(q)))
+      .map(c=>'<tr><td class="mut">'+esc(c.code)+'</td><td class="r">'+fmt(c.price)+'</td><td class="mut">'+esc(c.unit)+'</td><td>'+esc(tn(c))+'</td><td class="mut">'+esc(c.category)+'</td></tr>').join('');
   };
   $('#catQ').oninput=draw; box.onchange=draw; draw();
 }
@@ -630,7 +642,7 @@ $('#btnPlts').onclick=()=>{
   let h='<h2>'+T('Hasil & RAB PLTS|Solar result & RAB')+'</h2><div class="note">'+plts.pWp+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp) · '+
     plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh · inverter '+num(plts.inverter.specs,'watts')+' W · MPPT '+num(plts.scc.specs,'amps')+' A</div>';
   h+='<h3>'+T('RAB PLTS|Solar RAB')+'</h3><table><thead><tr><th style="text-align:left">'+T('Item|Item')+'</th><th class="r">'+T('Qty (satuan)|Qty (unit)')+'</th><th class="r">'+T('Harga|Price')+'</th><th class="r">Subtotal</th></tr></thead><tbody>';
-  for(const L of plts.lines)h+='<tr><td>'+esc(L.name)+'<div class="mut">'+esc(L.spec||L.code)+'</div></td><td class="r">'+L.qty+' '+esc(L.unit)+'</td><td class="r">'+fmt(L.price)+'</td><td class="r">'+fmt(L.subtotal)+'</td></tr>';
+  for(const L of plts.lines)h+='<tr><td>'+esc(tn(L.name))+'<div class="mut">'+esc(L.spec||L.code)+'</div></td><td class="r">'+L.qty+' '+esc(L.unit)+'</td><td class="r">'+fmt(L.price)+'</td><td class="r">'+fmt(L.subtotal)+'</td></tr>';
   h+='</tbody></table>';
   h+=summLine('Subtotal',fmt(t.subtotal));
   h+=summLine(T('Margin bengkel (|Workshop margin (')+t.marginPct+'%)','+'+fmt(t.margin));
@@ -683,7 +695,7 @@ function unduhCsv(){
   const q=c=>'"'+String(c).replace(/"/g,'""')+'"';
   const row=(a,b,c2,d,e,f,g)=>[a,b||'',c2||'',d||'',e||'',f||'',g||''];
   const rows=[row(T('Komponen|Component'),T('Kode|Code'),T('Kelompok|Group'),'Qty',T('Satuan|Unit'),T('Harga|Price'),'Subtotal')];
-  for(const L of lines)rows.push(row(L.name,L.code,L.group||'',L.qty,L.unit,L.price,L.subtotal));
+  for(const L of lines)rows.push(row(tn(L.name),L.code,L.group||'',L.qty,L.unit,L.price,L.subtotal));
   const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
   const tot=adv?adv.grand:simpleTotals(lines).total;
   if(adv){
@@ -727,7 +739,7 @@ function viabilityHtml(plts){
 
 function sowHtml(s,lines,adv,plts){
   const inCat=c=>lines.some(L=>L.category===c);
-  const catNames=c=>lines.filter(L=>L.category===c).map(L=>L.name);
+  const catNames=c=>lines.filter(L=>L.category===c).map(L=>tn(L.name));
   const join=(arr,n)=>{const t=arr.slice(0,n||4).map(esc).join(', ');return t+(arr.length>(n||4)?' +'+(arr.length-(n||4))+' item lain':'')+(arr.length?'.':'');};
   const scope=[[T('Desain & persiapan|Design & preparation'),T('samakan kebutuhan, pengukuran, sketsa layout sederhana, dan daftar material — kami konfirmasi desain ke Anda sebelum mulai memotong bahan.|we align on needs, take measurements, sketch a simple layout and draft the materials list — the design is confirmed with you before any cutting starts.')]];
   const pkg=catNames('STRUKTUR');
@@ -772,7 +784,7 @@ const histSave=a=>{try{localStorage.setItem('rab.hist',JSON.stringify(a));}catch
 const bandSel=new Set();
 function snapLabel(){
   const t={campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck'}[S.vehicleType]||'';
-  const pk=S.packageCode&&A_MAP[S.packageCode]?A_MAP[S.packageCode].name:'';
+  const pk=S.packageCode&&A_MAP[S.packageCode]?tn(A_MAP[S.packageCode]):'';
   return (S.vehicleType==='plts'?T('PLTS mandiri|Standalone solar'):t+(pk?' · '+pk:''))+(S.addonCodes.length?' +'+S.addonCodes.length+' add-on':'');
 }
 function simpanRiwayat(){
@@ -821,7 +833,7 @@ function bandingHtml(list){
   const rows=[
     [T('Grand total|Grand total'),e=>'<b>'+fmt(e.tot)+'</b>'],
     [T('Tipe|Type'),e=>esc({campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck',plts:T('PLTS mandiri|Standalone solar')}[e.veh]||e.veh)],
-    [T('Paket|Package'),e=>e.pkg&&A_MAP[e.pkg]?esc(A_MAP[e.pkg].name):(e.veh==='plts'?'—':T('tanpa paket|no package'))],
+    [T('Paket|Package'),e=>e.pkg&&A_MAP[e.pkg]?esc(tn(A_MAP[e.pkg])):(e.veh==='plts'?'—':T('tanpa paket|no package'))],
     ['Add-on',e=>e.addons?'+'+e.addons:'—'],
     ['PLTS',e=>e.wp?e.wp+' Wp · '+e.kwh+' kWh':'—'],
     ['Inverter / MPPT',e=>e.wp?e.inv+' W / '+e.scc+' A':'—'],
@@ -856,6 +868,12 @@ function renderRiwayat(){
 /* ===== bahasa & dark mode ===== */
 const LANG=(location.search.match(/[?&]lang=(en|id)\b/)||[])[1]||(function(){try{return localStorage.getItem('rab.lang')||'id';}catch(e){return 'id';}})();
 function T(p){const i=p.indexOf('|');return LANG==='en'&&i>=0?p.slice(i+1):p.slice(0,i<0?p.length:i);}
+/* ---- nama katalog EN (nameId → nameEn dari API referensi) ---- */
+const _EN={};(DATA.components||[]).forEach(c=>{if(c.nameEn)_EN[c.name]=c.nameEn;});
+(DATA.appliances||[]).forEach(a=>{if(a.nameEn)_EN[a.name]=a.nameEn;});
+function tn(x){if(LANG!=='en')return typeof x==='object'?(x.name||''):x;
+  if(typeof x==='object')return x.nameEn||x.name||'';
+  return _EN[x]||x;}
 
 /* ===== WhatsApp admin ===== */
 const WA_PHONE='6285334398681';
@@ -864,7 +882,7 @@ function waText(){
   if(!lines.length)return null;
   const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
   const tot=adv?adv.grand:simpleTotals(lines).total;
-  const nm=c=>A_MAP[c]?A_MAP[c].name:c;
+  const nm=c=>A_MAP[c]?tn(A_MAP[c]):c;
   const jenis={campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck',plts:'PLTS'}[S.vehicleType]||'-';
   const akt=(
     S.vehicleType==='plts'?[]:[T('Tipe: |Type: ')+jenis,

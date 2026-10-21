@@ -109,3 +109,14 @@
   Sweep leftovers EN: hanya nama katalog Indonesia (sengaja — nama barang vendor).
 - Catatan teknis: bug kuot ala `('|` diperbaiki global; helper T sendiri `indexOf('|')` dipulihkan manual.
 - Ukuran: build.py 64,6 KB → index.html ~75 KB.
+
+## Iterasi 6 — Nama katalog EN (Okt 21, ~16:10 WIB)
+- 79 komponen katalog kini memakai `nameEn` asli dari API referensi (bukan terjemahan buatan) — DATA components kini membawa
+  `nameEn`; 19 nama alat listrik diterjemahkan manual (`AP_EN`: LED lights, 12V refrigerator, Kitchen exhaust / blower, dst.).
+- Helper `T('ID|EN')` + `tn(x)` (nama by `nameId` → `nameEn`, fallback passthrough) diterapkan di 11 titik render:
+  select paket/layout/material, kartu add-on, daftar alat (apls), baris RAB konfigurator, baris RAB PLTS, tabel harga
+  (+ filter pencarian juga mencari `nameEn`, jadi EN "fridge"/ID "kulkas" dua-duanya tembus), CSV, string SOW join,
+  snapLabel paket, perbandingan penawaran, pesan/`nm()` WhatsApp.
+- Uji jsdom (t12/t13) ✓: tabel harga EN, pencarian EN/ID, opsi paket EN, add-on EN, alat EN, baris RAB EN;
+  regresi ID tidak berubah (masih "Paket Konversi Campervan Deluxe", dll.); t9 8/8 tetap hijau.
+- Ukuran: build.py 64,8 KB → index.html ~78,7 KB.
