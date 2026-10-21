@@ -136,6 +136,14 @@ input[type=checkbox]{width:16px;height:16px;flex:none;margin-top:4px}
 .sow .grow{display:grid;grid-template-columns:1.15fr 1fr;gap:0 20px}
 .sow .luar{border-top:1px dashed var(--line);margin-top:8px;padding-top:2px}
 @media print{.grow{grid-template-columns:1fr 1fr}}
+.hist{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line);flex-wrap:wrap}
+.hist:last-child{border-bottom:0}
+.hist .nm{flex:1 1 230px;min-width:0}
+.hist .btn.mini{padding:3px 9px;font-size:12.5px}
+.mini{font-size:12px}
+.cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0 10px}
+.cmp th,.cmp td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+.cmp .win{color:#166534;font-weight:800}
 .only-print{display:none}
 @media print{header,nav,.no-print{display:none!important}body{background:#fff}
 .only-print{display:flex!important}
@@ -199,6 +207,7 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
     </section>
   </div>
   <section class="card sticky" id="rabOut"></section>
+  <section class="card no-print" id="histBox"></section>
 </div>
 
 <div id="tab-apl" hidden>
@@ -563,6 +572,7 @@ function rabHtml(){
      '<button class="btn no-print" onclick="kirimWa()">📱 Kirim estimasi ke Admin (WhatsApp)</button> '+
      '<button class="btn ghost no-print" onclick="copyCfg()">🔗 Salin link konfigurasi</button> '+
      '<button class="btn ghost no-print" onclick="unduhCsv()">⬇️ Unduh CSV</button> '+
+     '<button class="btn ghost no-print" onclick="simpanRiwayat()">💾 Simpan ke Riwayat</button> '+
      '<button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button>';
   return h;
 }
@@ -610,6 +620,7 @@ $('#btnPlts').onclick=()=>{
   h+='<p class="mut"><button class="btn no-print" onclick="kirimWa()">📱 Kirim ke Admin (WhatsApp)</button> '+
      '<button class="btn ghost no-print" onclick="copyCfg()">🔗 Salin link konfigurasi</button> '+
      '<button class="btn ghost no-print" onclick="unduhCsv()">⬇️ Unduh CSV</button> '+
+     '<button class="btn ghost no-print" onclick="simpanRiwayat()">💾 Simpan ke Riwayat</button> '+
      '<button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button></p>';
   $('#pltsOut').innerHTML=h;
 };
@@ -730,6 +741,93 @@ function sowHtml(s,lines,adv,plts){
   return h;
 }
 
+/* ===== riwayat penawaran & perbandingan ===== */
+const histLoad=()=>{try{return JSON.parse(localStorage.getItem('rab.hist')||'[]')}catch(e){return []}};
+const histSave=a=>{try{localStorage.setItem('rab.hist',JSON.stringify(a));}catch(e){}};
+const bandSel=new Set();
+function snapLabel(){
+  const t={campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck'}[S.vehicleType]||'';
+  const pk=S.packageCode&&A_MAP[S.packageCode]?A_MAP[S.packageCode].name:'';
+  return (S.vehicleType==='plts'?'PLTS mandiri':t+(pk?' · '+pk:''))+(S.addonCodes.length?' +'+S.addonCodes.length+' add-on':'');
+}
+function simpanRiwayat(){
+  const {lines,plts}=buildRabLines(S);
+  if(!lines.length){alert('Susun dulu paket / add-on / kebutuhan listrik.');return;}
+  const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
+  const kgn=lines.reduce((a,L)=>a+(L.weightKg||0)*L.qty,0);
+  const e={id:Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36),ts:Date.now(),
+    cfg:encodeCfg(),label:snapLabel(),
+    tot:adv?adv.grand:simpleTotals(lines).total,
+    wp:plts?plts.pWp:0,kwh:plts?+(plts.batWh/1000).toFixed(1):0,
+    inv:plts?num(plts.inverter.specs,'watts'):0,scc:plts?num(plts.scc.specs,'amps'):0,
+    wd:adv?adv.workDays:0,cx:adv?adv.cx.score:0,kg:Math.round(kgn),
+    addons:(S.addonCodes||[]).length,veh:S.vehicleType,pkg:S.packageCode||'',lay:S.layoutCode||'',mat:S.materialCode||''};
+  const a=histLoad();a.unshift(e);if(a.length>30)a.pop();
+  histSave(a);renderRiwayat();toast('Disimpan ke riwayat ✓');
+}
+function muatRiwayat(id){
+  const e=histLoad().find(x=>x.id===id);if(!e)return;
+  const cf=decodeCfg(e.cfg);if(!cf){toast('Snapshot rusak');return;}
+  Object.assign(S,cf);save();
+  renderAll();renderRiwayat();
+  toast('Konfigurasi dimuat dari riwayat ✓');
+  try{$('#rabOut').scrollIntoView({behavior:'smooth',block:'start'});}catch(x){}
+}
+function hapusRiwayat(id){histSave(histLoad().filter(x=>x.id!==id));bandSel.delete(id);renderRiwayat();toast('Entri dihapus');}
+function salinHist(id){
+  const e=histLoad().find(x=>x.id===id);if(!e)return;
+  const link=location.origin+location.pathname+'?cfg='+e.cfg;
+  const done=()=>toast('Link snapshot disalin ✓');
+  const fb=()=>{if(window.prompt('Salin link snapshot:',link))done();};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(link).then(done).catch(fb);
+  else fb();
+}
+function toggleBanding(id){
+  if(bandSel.has(id))bandSel.delete(id);
+  else{if(bandSel.size>=3){toast('Bandingkan maksimal 3 penawaran');return;}bandSel.add(id);}
+  renderRiwayat();
+}
+function histLabel(e){
+  const d=new Date(e.ts);
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+function bandingHtml(list){
+  const min=Math.min.apply(null,list.map(e=>e.tot));
+  const rows=[
+    ['Grand total',e=>'<b>'+fmt(e.tot)+'</b>'],
+    ['Tipe',e=>esc({campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck',plts:'PLTS mandiri'}[e.veh]||e.veh)],
+    ['Paket',e=>e.pkg&&A_MAP[e.pkg]?esc(A_MAP[e.pkg].name):(e.veh==='plts'?'—':'tanpa paket')],
+    ['Add-on',e=>e.addons?'+'+e.addons:'—'],
+    ['PLTS',e=>e.wp?e.wp+' Wp · '+e.kwh+' kWh':'—'],
+    ['Inverter / MPPT',e=>e.wp?e.inv+' W / '+e.scc+' A':'—'],
+    ['Tenaga kerja',e=>e.wd?e.wd+' hari kerja':'—'],
+    ['Kompleksitas',e=>e.cx?'×'+Number(e.cx).toFixed(2):'—'],
+    ['Berat komponen',e=>e.kg?'±'+e.kg+' kg':'—'],
+  ];
+  let h='<h3>⚖️ Perbandingan penawaran</h3><table class="cmp"><thead><tr><th style="width:110px">Aspek</th>'+
+    list.map(e=>'<th>'+esc(histLabel(e))+'<div class="mut mini">'+esc(e.label)+'</div></th>').join('')+'</tr></thead><tbody>';
+  for(const r of rows)h+='<tr><td class="mut" style="font-size:12.5px">'+r[0]+'</td>'+
+    list.map(e=>'<td'+(r[0]==='Grand total'&&e.tot===min?' class="win"':'')+'>'+r[1](e)+'</td>').join('')+'</tr>';
+  return h+'</tbody></table>';
+}
+function renderRiwayat(){
+  const a=histLoad(),box=$('#histBox');
+  if(!a.length){box.innerHTML='<h2>🗂️ Riwayat penawaran</h2><div class="mut">Belum ada. Tekan tombol “💾 Simpan ke Riwayat” pada hasil RAB — konfigurasi & angkanya bisa dibuka ulang atau dibandingkan kapan pun (maks. 30 entri).</div>';return;}
+  const sel=a.filter(e=>bandSel.has(e.id));
+  let h='<h2>🗂️ Riwayat penawaran</h2>';
+  if(sel.length>=2)h+=bandingHtml(sel)+'<p class="mut mini">Angka hijau = grand total termurah di antara pilihan.</p>';
+  h+=a.map(e=>'<div class="hist"><div class="nm"><b>'+esc(e.label)+'</b> <span class="tag mini">'+esc(histLabel(e))+'</span>'+
+    '<div class="mut mini">'+(e.wp?e.wp+' Wp · '+e.kwh+' kWh · ':'')+(e.wd?e.wd+' hari kerja · ':'')+'berat ±'+e.kg+' kg</div></div>'+
+    '<b style="white-space:nowrap">'+fmt(e.tot)+'</b>'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto">'+
+    '<button class="btn ghost mini" onclick="muatRiwayat(\''+e.id+'\')">📂 Muat</button>'+
+    '<button class="btn ghost mini" onclick="toggleBanding(\''+e.id+'\')">'+(bandSel.has(e.id)?'✅ Dipilih':'⚖️ Bandingkan')+'</button>'+
+    '<button class="btn ghost mini" onclick="salinHist(\''+e.id+'\')">🔗</button>'+
+    '<button class="btn ghost mini" onclick="if(confirm(\'Hapus entri ini?\'))hapusRiwayat(\''+e.id+'\')">🗑️</button>'+
+    '</div></div>').join('');
+  box.innerHTML=h;
+}
+
 /* ===== WhatsApp admin ===== */
 const WA_PHONE='6285334398681';
 function waText(){
@@ -763,7 +861,7 @@ function kirimWa(){
 
 renderApls('#apls'); renderApls('#apls2');
 S.sunIncome=Number(S.sunIncome)||4.5;
-bindManual(); renderAll(); renderCat(); updateEst();
+bindManual(); renderAll(); renderCat(); updateEst(); renderRiwayat();
 </script>
 </body>
 </html>

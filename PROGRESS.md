@@ -1,6 +1,6 @@
 # PROGRESS — Kalkulator RAB GitHub Pages (referensi: nasbpfsby.duckdns.org:8444)
 
-**Status: live + permalink + cek kelayakan + CSV + SOW. Terakhir: 2026-10-21 ~14:50 WIB**
+**Status: live + riwayat & perbandingan penawaran. Terakhir: 2026-10-21 ~15:15 WIB**
 
 ## Target
 - Satu `index.html` GitHub Pages: kalkulator RAB campervan/motorhome/food-truck/PLTS.
@@ -69,6 +69,16 @@
   Humanis, tercetak di PDF (bagian .sow ikut print).
 - Berat komponen (kg) ditampilkan di RAB & PLTS.
 - File 57,4 KB; node --check ✓; smoke jsdom t4/t5/t7 lulus.
+
+## Iterasi 4 (Okt 2026 ~15:10)
+- **Riwayat penawaran** (localStorage `rab.hist`, maks 30): tombol "💾 Simpan ke Riwayat" di RAB & PLTS —
+  snapshot S (merged base64 cfg) + label otomatis + grand total + Wp/kWh/inverter/MPPT + workDays +
+  kompleksitas + berat kg. Panel "🗂️ Riwayat" di bawah RAB: Muat (restore state + re-render), salin link
+  snapshot, hapus.
+- **Perbandingan penawaran**: pilih 2–3 entri (⚖️) → tabel side-by-side; grand total termurah diberi
+  kelas .win (hijau tebal). Catatan pedoman di bawah tabel.
+- Teruji jsdom (t8): simpan 2 snapshot, banding, muat newest (foodtruck + manual 6000 restored), salin,
+  hapus. File 63,5 KB — masih satu file.
 
 ## Keputusan akhir harga
 - Aplikasi memakai **harga katalog vendor asli** untuk semua 79 komponen (real seller, Aug 2026).
