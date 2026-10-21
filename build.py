@@ -69,9 +69,16 @@ TEMPLATE = r"""<!DOCTYPE html>
 <meta property="og:site_name" content="Kalkulator RAB">
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="https://bilidarnanto.github.io/rab-kalkulator/">
+<meta name="google-site-verification" content="qOh3prb1Smavfyra9wRaYZVwQyn4cc-QYFbsiTVeUkE">
+<meta property="og:image" content="https://bilidarnanto.github.io/rab-kalkulator/logo.jpg">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:alt" content="EcoPower ID — bengkel konversi campervan & instalasi PLTS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://bilidarnanto.github.io/rab-kalkulator/logo.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"Kalkulator RAB — EcoPower ID","url":"https://bilidarnanto.github.io/rab-kalkulator/","applicationCategory":"BusinessApplication","operatingSystem":"Any","inLanguage":"id","description":"Kalkulator RAB konversi campervan, motorhome, food truck dan instalasi PLTS","offers":{"@type":"Offer","price":"0","priceCurrency":"IDR"}}
+{"@context":"https://schema.org","@type":"WebApplication","name":"Kalkulator RAB — EcoPower ID","url":"https://bilidarnanto.github.io/rab-kalkulator/","applicationCategory":"BusinessApplication","operatingSystem":"Any","inLanguage":"id","description":"Kalkulator RAB konversi campervan, motorhome, food truck dan instalasi PLTS","image":"https://bilidarnanto.github.io/rab-kalkulator/logo.jpg","offers":{"@type":"Offer","price":"0","priceCurrency":"IDR"}}
 </script>
 <style>
 :root{--bch:#275b31;--acc:#2f7d3f;--mut:#64748b;--line:#e2e8f0;--bg:#f8fafc}
@@ -113,7 +120,9 @@ input[type=checkbox]{width:16px;height:16px;flex:none;margin-top:4px}
 .warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0}
 .note{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0}
 .sticky{position:sticky;top:10px}
+.only-print{display:none}
 @media print{header,nav,.no-print{display:none!important}body{background:#fff}
+.only-print{display:flex!important}
 section.card{border:0;padding:0;margin:0 0 12px}.sticky{position:static}
 body[data-tab="conf"] #tab-apl,body[data-tab="conf"] #tab-cat{display:none!important}
 body[data-tab="apl"] #tab-conf,body[data-tab="apl"] .pst{display:none!important}
@@ -124,10 +133,19 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
 </head>
 <body data-tab="conf">
 <header>
-  <h1>⚡ Kalkulator RAB</h1>
+  <img src="logo.jpg" alt="logo EcoPower ID" style="height:34px;width:34px;object-fit:cover;border-radius:9px;flex:none">
+  <h1>Kalkulator RAB <span style="font-weight:400;opacity:.8;font-size:13px">· EcoPower ID</span></h1>
   <small>Campervan · Motorhome · Food Truck · PLTS — harga real katalog vendor (Aug 2026), verifikasi pasar Okt 2026</small>
 </header>
 <main>
+<div id="kop" class="only-print" style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+  <img src="logo.jpg" alt="EcoPower ID" style="height:64px;width:64px;object-fit:cover;border-radius:12px">
+  <div>
+    <div style="font-weight:800;font-size:17px">EcoPower ID</div>
+    <div style="font-size:12.5px">Bengkel Konversi Campervan, Motorhome, Food Truck & Instalasi PLTS</div>
+    <div style="font-size:12px;color:#475569">Perum Permata Indah A9 No.10, Bangil, Pasuruan · WA +62 853-3439-8681 · projectigniter@gmail.com</div>
+  </div>
+</div>
 <nav class="no-print">
   <button data-tab="conf" class="on">Konfigurator RAB</button>
   <button data-tab="apl">Kalkulator PLTS</button>
