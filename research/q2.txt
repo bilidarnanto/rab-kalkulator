@@ -1,0 +1,12 @@
+kulkas12v|harga kulkas 12V DC 60 liter campervan
+kompor|harga kompor gas 2 tungku portable outdoor
+pompa|harga pompa air 12V DC + tangki air 60 liter
+toilet|harga toilet portable kimbo 30 liter
+wheater|harga water heater pemanas air 12V DC
+vent|harga solar fan roof vent exhaust kamper
+eskopi|harga mesin espresso komersial semi auto
+fryer|harga deep fryer gas 2 tampung
+griddle|harga mesin griddle teppanyaki stainless
+hood|harga cooker hood stainless dinding
+kdispl|harga kulkas display 200 liter tinggi
+freezer|harga freezer chest 200 liter polytron

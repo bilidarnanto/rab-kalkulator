@@ -1,0 +1,18 @@
+pompa|harga pompa air DC 12V diafragma tekanan tinggi
+toilet|harga toilet portable kimbo 30 liter
+wheater|harga water heater DC 12V pemanas air portable
+vent|harga solar fan atap kamper roof vent 12V
+eskopi|harga mesin espresso komersial semi automatic
+fryer|harga deep fryer 10 liter gas komersial
+griddle|harga mesin teppanyaki griddle stainless
+hood|harga cooker hood dinding stainless 60cm
+kdispl|harga kulkas display 2 pintu 200 liter
+freezer|harga freezer chest 200 liter sabtu
+kompor|harga kompor gas 2 tungku portabel stainless
+ply12|harga plyboard plywood 12 mm per lembar
+alucb|harga alucobond aluminium composite 3mm per lembar
+hpl|harga HPL per lembar 122x244
+kabel|harga kabel NYM 2x2.5 per meter ICW
+mcb|harga MCB 2P 32A Curve C
+mc4|harga konektor MC4 solar
+upah|upah tukang bangunan per hari 2026 Jakarta

@@ -1,0 +1,12 @@
+panel100|harga panel surya 100 wp
+panel200|harga panel surya 200 wp
+panel450|harga panel surya 450 wp
+bat100|harga baterai LiFePO4 100Ah 12V
+bat200|harga baterai LiFePO4 200Ah 12V
+bat300|harga baterai LiFePO4 300Ah 12V
+inv1000|harga inverter pure sine wave 1000 watt
+inv2000|harga inverter pure sine wave 2000 watt
+inv3000|harga inverter pure sine wave 3000 watt
+scc30|harga solar charge controller MPPT 30A
+scc60|harga solar charge controller MPPT 60A
+scc100|harga solar charge controller MPPT 100A
