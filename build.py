@@ -176,6 +176,28 @@ body.dark .grand{border-top-color:#dbe6f1}
 body.dark .toast{outline:1px solid #334155}
 @media print{body.dark{background:#fff!important;color:#1e293b}
 body.dark .card,body.dark th,body.dark .gw{background:#fff!important;color:#1e293b!important}}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:640px){
+body{font-size:14.5px}
+header{padding:10px 12px;gap:8px}
+header small{display:none}
+header h1{font-size:15.5px}
+main{padding:12px 10px 60px}
+section.card{padding:12px;border-radius:10px}
+select,input[type=number],input[type=text]{font-size:16px;padding:9px 10px}
+nav button{padding:8px 12px;font-size:13.5px}
+table{font-size:12.5px}
+th,td{padding:5px 6px}
+section.card .btn:not(.mini){width:100%;margin:5px 0}
+.sow .grow{grid-template-columns:1fr}
+.sow{padding:8px 10px}
+.tot{font-size:13px}
+.grand{font-size:15px}
+.opt label{flex:1 1 140px}
+.sticky{position:static}
+h2{font-size:15px}
+.toast{max-width:92vw;white-space:normal}
+}
 .only-print{display:none}
 @media print{header,nav,.no-print{display:none!important}body{background:#fff}
 .only-print{display:flex!important}
@@ -257,7 +279,7 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
     </div>
     <button class="btn" id="btnPlts" style="margin-top:12px" data-tr="Hitung & susun RAB PLTS|Calculate & build solar RAB">Hitung & susun RAB PLTS</button>
   </section>
-  <section class="card" id="pltsOut"><div class="mut">Isi jumlah unit & jam pemakaian, lalu tekan hitung.</div></section>
+  <section class="card" id="pltsOut"><div class="mut" data-tr="Isi jumlah unit & jam pemakaian, lalu tekan hitung.|Fill in units & hours of use, then hit calculate.">Isi jumlah unit & jam pemakaian, lalu tekan hitung.</div></section>
 </div>
 
 <div id="tab-cat" hidden>
@@ -919,6 +941,9 @@ bindManual(); renderAll(); renderCat(); updateEst(); renderRiwayat();
     location.href=location.origin+location.pathname+'?lang='+(LANG==='id'?'en':'id');};
   document.querySelectorAll('[data-tr]').forEach(el=>el.textContent=T(el.dataset.tr));
   $('#catQ').placeholder=T('Cari nama / kode…|Search name / code…');
+  const tw=el=>{[...el.querySelectorAll('table')].forEach(t=>{if(t.parentElement&&t.parentElement.classList.contains('tw'))return;const w=document.createElement('div');w.className='tw';t.parentNode.insertBefore(w,t);w.appendChild(t);});};
+  tw(document.body);
+  new MutationObserver(mrs=>{let c=0;mrs.forEach(m=>c+=m.addedNodes.length);if(c)tw(document.body);}).observe(document.body,{childList:true,subtree:true});
 }catch(e){}})();
 </script>
 </body>

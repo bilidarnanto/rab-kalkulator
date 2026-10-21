@@ -120,3 +120,13 @@
 - Uji jsdom (t12/t13) ✓: tabel harga EN, pencarian EN/ID, opsi paket EN, add-on EN, alat EN, baris RAB EN;
   regresi ID tidak berubah (masih "Paket Konversi Campervan Deluxe", dll.); t9 8/8 tetap hijau.
 - Ukuran: build.py 64,8 KB → index.html ~78,7 KB.
+
+## Iterasi 7 — Mobile view (request admin, Okt 21, ~16:35 WIB)
+- **Blok `@media (max-width:640px)`**: header ringkas (subjudul disembunyikan di HP), padding kartu/teks lebih rapat,
+  **input font 16px** (mencegah auto-zoom iOS), tombol hasil (`Send/CSV/Copy/History/Print`) **stack full-width**,
+  chrome kendaraan min 140px, `.sticky` hasil jadi statis (tak memakan layar), toast max 92vw.
+- **Tabel scroll horizontal** rapi via `.tw{overflow-x:auto}`: tabel RAB/PLTS/harga/kelayakan/perbandingan otomatis
+  dibungkus `div.tw` saat boot (MutationObserver, idempotent — diuji: `tw count 2`, tanpa `tw .tw`, tanpa loop).
+- Bonus: empty-state kalkulator PLTS ditranslasi EN (`data-tr`).
+- Uji jsdom t14 ✓ (wrap tabel) + regresi t9 8/8 & t12 (nama EN) tetap hijau; `node --check` OK.
+- Catatan: grid formulir sudah auto-fit (memecah jadi 1 kolom di <~460px) sejak awal — tidak perlu diubah.
