@@ -12,6 +12,8 @@ Buka `index.html` langsung di browser (double-click / `file://`), tanpa server.
 3. **Settings → Pages → Branch `main` / folder `/ (root)` → Save.**
 4. Akses: `https://<user>.github.io/<repo>/`.
 
+**URL hidup**: https://bilidarnanto.github.io/rab-kalkulator/ (judul repo `bilidarnanto/rab-kalkulator`)
+
 Catatan: file `index.html` gratis semua logic-nya di sisi browser (state tersimpan di
 `localStorage`), jadi tidak butuh backend atau secrets.
 

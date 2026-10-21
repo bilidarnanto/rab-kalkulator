@@ -40,6 +40,12 @@
   panel 100/200/450/550 Wp, baterai LiFePO4 100/200 Ah, inverter, MPPT, MCB AC/DC, kabel NYM,
   plywood, ACM, HPL, kulkas 12V, MC4 §umum.
 
+## Deployment
+- Repo `bilidarnanto/rab-kalkulator` dibuat (token user, PAT), push 4 commit, GitHub Pages diaktifkan (branch main, root).
+- URL: https://bilidarnanto.github.io/rab-kalkulator/
+- Catatan: skrip putaran perbaikan riset menuliskan ulang 18 bukti HTML antrian (all captcha 73,9 KB)
+  seluruh temuan harga sudah direkam teks di `RESEARCH.md §C/§B`; bukti panel/baterai/kulkas utuh.
+
 ## Keputusan akhir harga
 - Aplikasi memakai **harga katalog vendor asli** untuk semua 79 komponen (real seller, Aug 2026).
 - Rentang pasar Okt 2026 dicatat sebagai pembanding di `RESEARCH.md` (bukan diaplikasi),
