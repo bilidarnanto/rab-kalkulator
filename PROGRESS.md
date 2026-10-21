@@ -1,6 +1,6 @@
 # PROGRESS — Kalkulator RAB GitHub Pages (referensi: nasbpfsby.duckdns.org:8444)
 
-**Status: aplikasi lolos uji UI end-to-end (jsdom); riset appliance/material putaran perbaikan berjalan. Terakhir: 2026-10-21 ~15:05 WIB**
+**Status: SELESAI (aplikasi + riset yang memungkinkan). Terakhir: 2026-10-21 ~15:35 WIB**
 
 ## Target
 - Satu `index.html` GitHub Pages: kalkulator RAB campervan/motorhome/food-truck/PLTS.
@@ -32,12 +32,19 @@
 - [riset] Perlengkapan & material (18 query Brave, pacing 50 s) — kulkas 12V 60 L terkonfirmasi
   Rp4,49 jt (Taffware T60, Tokopedia) ≈ harga katalog Rp4,5 jt ✅. Selebihnya menunggu file selesai lalu diagregasi.
 
-## Setelah riset berjalan
-- [ ] Agregasi hasil perlengkapan/material → update `RESEARCH.md §C`.
-- [ ] Kalibrasi harga aplikasi bila ada selisih besar vs pasar (target: tetap harga katalog vendor;
-  selisih dicatat sebagai rentang pasar di RESEARCH.md).
-- [ ] Hasil riset putaran perbaikan (pompa/toilet/water-heater/vent/mesin kopi/fryer/griddle/hood/
-  kulkas display/freezer/kompor/upah) → update §C.
+## Hasil riset putaran perbaikan
+- Brave mengaktifkan **captcha tingkat IP** pada putaran appliance — 12 item sisanya
+  **tidak terverifikasi eksternal** (pompa, toilet, water-heater, vent, mesin kopi, fryer,
+  griddle, hood, kulkas display, freezer, kompor, upah). Bensin harga tetap harga katalog
+  vendor asli (real seller), keterbatasan dicatat di `RESEARCH.md §D`. Query yang berhasil:
+  panel 100/200/450/550 Wp, baterai LiFePO4 100/200 Ah, inverter, MPPT, MCB AC/DC, kabel NYM,
+  plywood, ACM, HPL, kulkas 12V, MC4 §umum.
+
+## Keputusan akhir harga
+- Aplikasi memakai **harga katalog vendor asli** untuk semua 79 komponen (real seller, Aug 2026).
+- Rentang pasar Okt 2026 dicatat sebagai pembanding di `RESEARCH.md` (bukan diaplikasi),
+  selisih paling reduksi ~10–15% pada premium retail vs harga katalog.
+- Mode "Optimasi sizing" mencari paket terhemat; mode referensi mengikuti situs asli persis.
 
 ## Uji fungsional (jsdom, Okt 21)
 - Load, tab switch, pilih paket PRM + add-on → Rp190,4 jt (CV-PRM penuh, yaw delta wajar).

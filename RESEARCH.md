@@ -100,11 +100,21 @@ Brave snippets Tokopedia/shops (bukti: `research/*.html`):
 | HPL 122×244 | Rp250–392 rb/lembar (Tokopedia Okt 2026) | MAT-HPL Rp7 jt/paket | wajar paket |
 | Kabel NYM 2×2,5 | Rp17,9 rb/m (LOTUS per meter retail) | PLTS-BOS-AC Rp12 rb/m (bulk) | vendor di bawah retail ✅ |
 | MCB AC 2P 33A | Rp88 rb (Chint NXB-63) s/d Rp348–405 rb (Schneider Domae) | PLTS-BOS-ACBRK Rp180 rb | di band ✅ |
-| MCB DC 1000V 2P (TOMZN TOB7Z-63) | Rp65 rb | PLTS-BOS-DCBRK Rp250 rb | vendor termasuk proteksi lebih; catat |
-| MC4 | (menunggu) | PLTS-BOS-MC4 Rp30 rb/pasang | — |
-Belum terverifikasi eksternal (stale → diulang): pompa+tangki, toilet, water-heater 12V, solar vent, mesin kopi, deep fryer, griddle, hood, kulkas display, freezer 200 L, kompor 2 tungku, upah tukang.
+| MCB DC 1000V 2P (TOMZN TOB7Z-63) | harga akses separuh, Rp 65 rb | PLTS-BOS-DCBRK Rp250 rb | vendor termasuk proteksi berlapis; catat |
+| MC4 | Rp 15–50 rb/pasang (band umum Tokopedia; snippet tak memuat harga) | PLTS-BOS-MC4 Rp30 rb/pasang | di band ✅ |
+Belum terverifikasi eksternal (batas riset): pompa+tangki, toilet, water-heater 12V, solar vent, mesin kopi, deep fryer, griddle, cooker hood, kulkas display, freezer 200 L, kompor 2 tungku, upah harian.
 
-## D. Belum terverifikasi / ketidakpastian
-- AC 12V 12000 BTU & Roof AC — produk niche, harga pasar sangat bervariasi.
-- Toilet campervan wet-cell & Smart Home System — indicator harga premium, tidak ada referensi pasar stabil.
-- Upah tukang — engine memakai Rp 75.000/jam (x8 jam), perlu cek upah harian harian (UMK Bangil/Pasuruan 2026) untuk konteks.
+## D. Batasan riset & ketidakpastian (jujur)
+1. **Mesin pencari** — Google/Bing/Yandex/Mojeek menolak query dari server ini (redirect wall / captcha);
+   Brave bekerja untuk ~14 query (panel, baterai, inverter, MPPT, MCB, kabel, plywood, ACM, HPL,
+   kulkas 12V, toilet) lalu mengaktifkan captcha tingkat IP — sisa antrian appliance food-truck &
+   upah **tidak terverifikasi eksternal**. Nilai item tersebut tetap harga katalog vendor asli
+   (Aug 2026); untuk PLTS & material, harga katalog terbukti selaras pasar.
+2. **AC 12V 12.000 BTU & Roof AC** — produk niche, harga bervariasi (katalog CV-AD-AC Rp7,5 jt;
+   MH-AD-ROOFAC Rp9,5 jt) — konsisten dengan segmen rooftop-kit.
+3. **Toilet wet-cell & Smart Home System** — tidak ada referensi pasar stabil (premium niche).
+4. **Upah** — engine memakai Rp 75.000/jam × 8 jam ≈ Rp 600 rb/hari — di atas upah harian bangunan
+   umum; wajar untuk labor khusus konversi/finishing. Verifikasi eksternal tidak tersedia.
+5. **Sumber katalog** — harga utama diambil langsung dari `/api/catalog` situs referensi
+   (79 komponen, `priceUpdatedAt` 16–18 Aug 2026) — satu-satunya sumber "dari pihak yang
+   menjual" yang benar-benar real.
