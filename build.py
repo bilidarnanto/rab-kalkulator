@@ -101,10 +101,14 @@ input[type=checkbox]{width:16px;height:16px;flex:none;margin-top:4px}
 .sticky{position:sticky;top:10px}
 @media print{header,nav,.no-print{display:none!important}body{background:#fff}
 section.card{border:0;padding:0;margin:0 0 12px}.sticky{position:static}
+body[data-tab="conf"] #tab-apl,body[data-tab="conf"] #tab-cat{display:none!important}
+body[data-tab="apl"] #tab-conf,body[data-tab="apl"] .pst{display:none!important}
+body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!important}
+.pst{display:none!important}
 }
 </style>
 </head>
-<body>
+<body data-tab="conf">
 <header>
   <h1>⚡ Kalkulator RAB</h1>
   <small>Campervan · Motorhome · Food Truck · PLTS — harga real katalog vendor (Aug 2026), verifikasi pasar Okt 2026</small>
@@ -118,7 +122,7 @@ section.card{border:0;padding:0;margin:0 0 12px}.sticky{position:static}
 
 <div id="tab-conf">
   <div class="grid">
-    <section class="card">
+    <section class="card pst">
       <h2>1 · Tipe & paket</h2>
       <div class="opt" id="vehList"></div>
       <label>Paket konversi</label><select id="pkg"></select>
@@ -131,11 +135,11 @@ section.card{border:0;padding:0;margin:0 0 12px}.sticky{position:static}
         <div><b>Optimasi sizing komponen PLTS</b>
         <div class="mut">Cari kombinasi unit terhemat (Rp/Wh & Rp/Wp terendah) yang memenuhi kebutuhan.</div></div></div>
     </section>
-    <section class="card">
+    <section class="card pst">
       <h2>2 · Kelengkapan (add-on)</h2>
       <div id="addons"></div>
     </section>
-    <section class="card">
+    <section class="card pst">
       <h2>3 · Kebutuhan listrik harian</h2>
       <div id="apls"></div>
       <div class="grid" style="margin-top:10px">
@@ -150,7 +154,7 @@ section.card{border:0;padding:0;margin:0 0 12px}.sticky{position:static}
 </div>
 
 <div id="tab-apl" hidden>
-  <section class="card">
+  <section class="card pst">
     <h2>Kalkulator PLTS (sistem mandiri)</h2>
     <div id="apls2"></div>
     <div class="grid" style="margin-top:10px">
@@ -521,6 +525,7 @@ function renderCat(){
 
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  document.body.dataset.tab=b.dataset.tab;
   for(const id of ['conf','apl','cat'])$('#tab-'+id).hidden=(b.dataset.tab!==id);
 });
 
@@ -540,7 +545,7 @@ $('#btnPlts').onclick=()=>{
   h+=summLine('Grand total','<b>'+fmt(t.total)+'</b>','grand');
   const n=optimNotes(plts);
   if(n.length)h+='<h3>Catatan optimasi komponen</h3><div class="note">'+n.map(x=>'• '+esc(x)).join('<br>')+'</div>';
-  h+='<p class="mut"><button class="btn ghost" onclick="window.print()">🖨️ Cetak / simpan PDF</button></p>';
+  h+='<p class="mut"><button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button></p>';
   $('#pltsOut').innerHTML=h;
 };
 
