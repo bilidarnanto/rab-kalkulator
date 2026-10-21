@@ -1,6 +1,6 @@
 # PROGRESS — Kalkulator RAB GitHub Pages (referensi: nasbpfsby.duckdns.org:8444)
 
-**Status: live + WhatsApp admin + SEO. Terakhir: 2026-10-21 ~16:25 WIB**
+**Status: live + permalink + cek kelayakan + CSV + SOW. Terakhir: 2026-10-21 ~14:50 WIB**
 
 ## Target
 - Satu `index.html` GitHub Pages: kalkulator RAB campervan/motorhome/food-truck/PLTS.
@@ -53,6 +53,22 @@
   robots.txt + sitemap.xml (di-produce oleh build.py), sitemap ping ke Google.
 - Sitemap ping g:api.google.com? = status diproses; pengindeksan organik saat ini terjadi
   beberapa hari (GitHub Pages telah di-crawl robot Google karena domain tsb aktif).
+
+## Iterasi 3 (Okt 2026 ~14:45)
+- **Permalink konfigurasi**: tombol "🔗 Salin link konfigurasi" (RAB + PLTS tab) → URL `?cfg=<base64url S>`;
+  load-terima via `decodeCfg` di boot (menimpa localStorage), tes jsdom restore ✓; pesan WA kini
+  menyertakan link konfigurasi sehingga admin membuka & mengedit state yang sama persis.
+- **Cek kelayakan sistem** (badge OK ✓ / PERIKSA ✗): produksi panel vs kebutuhan Wh/hari
+  (Wp×sun×0.75), otonomi baterai (batWh×0.8/kebutuhan vs target ≥1 hari), inverter vs beban puncak
+  (margin %), MPPT vs arus (Wp/V×1.25) — jalur negatif teruji (manual 30.000 Wh/9.000 W → 2 PERIKSA + warn).
+- **Unduh CSV** RAB (semicolon + BOM utf-8, termasuk tenaga kerja/kompleksitas/diskon/kontingensi/PPN/grand).
+- **SOW — Lingkup Pekerjaan & Kesepakatan** (sowHtml, dinamis sesuai konfigurasi): lingkup
+  (desain/struktur/interior/kelistrikan/peralatan/PLTS sesuai item yang dipilih), jangka waktu estimasi
+  (workDays atau 2–3 hari PLTS + lead-time 7–14 hari), komitmen bengkel (garansi pengerjaan 90 hari,
+  progres+foto, handover bersih), hak & kewajiban konsumen, daftar di luar lingkup, catatan 30 hari.
+  Humanis, tercetak di PDF (bagian .sow ikut print).
+- Berat komponen (kg) ditampilkan di RAB & PLTS.
+- File 57,4 KB; node --check ✓; smoke jsdom t4/t5/t7 lulus.
 
 ## Keputusan akhir harga
 - Aplikasi memakai **harga katalog vendor asli** untuk semua 79 komponen (real seller, Aug 2026).

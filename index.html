@@ -66,6 +66,22 @@ input[type=checkbox]{width:16px;height:16px;flex:none;margin-top:4px}
 .warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0}
 .note{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0}
 .sticky{position:sticky;top:10px}
+.badge{display:inline-block;border-radius:6px;padding:1px 8px;font-size:12.5px;font-weight:600}
+.badge.ok{background:#dcfce7;color:#166534}
+.badge.warn{background:#fef3c7;color:#92400e}
+.badge.bad{background:#fee2e2;color:#991b1b}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1e293b;color:#fff;border-radius:10px;padding:10px 18px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
+.toast.show{opacity:.95}
+.viab{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 2px}
+.viab th,.viab td{padding:6px 8px;border-bottom:1px solid var(--line)}
+.viab th{font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--mut)}
+.sow{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13.5px;margin:10px 0}
+.sow h4{margin:10px 0 3px;font-size:13.5px;color:#334155}
+.sow ul{margin:2px 0 4px 18px;padding:0}
+.sow li{margin:3px 0;line-height:1.45}
+.sow .grow{display:grid;grid-template-columns:1.15fr 1fr;gap:0 20px}
+.sow .luar{border-top:1px dashed var(--line);margin-top:8px;padding-top:2px}
+@media print{.grow{grid-template-columns:1fr 1fr}}
 .only-print{display:none}
 @media print{header,nav,.no-print{display:none!important}body{background:#fff}
 .only-print{display:flex!important}
@@ -327,6 +343,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 let S={vehicleType:'campervan',packageCode:'CV-PKG-STD',layoutCode:'',materialCode:'',addonCodes:[],
   includePlts:false,optSizing:true,appliances:{},manualDailyWh:null,manualPeakW:null,sunIncome:4.5};
 try{Object.assign(S,JSON.parse(localStorage.getItem('rab.state')||'{}'));}catch(e){}
+try{const mc=location.search.match(/[?&]cfg=([^&]+)/);if(mc){const cf=decodeCfg(mc[1]);if(cf)Object.assign(S,cf);}}catch(e){}
 const save=()=>{try{localStorage.setItem('rab.state',JSON.stringify(S));}catch(e){}};
 
 const VEH=[{id:'campervan',nm:'🚐 Campervan',d:'van konversi 1–4 orang'},
@@ -477,14 +494,22 @@ function rabHtml(){
     h+=summLine('Grand total','<b>'+fmt(t.total)+'</b>','grand');
   }
   if(plts){
+    const kgn=lines.reduce((a,L)=>a+(L.weightKg||0)*L.qty,0);
     h+='<h3>Sistem PLTS terpilih</h3><div class="note">'+esc(plts.pWp)+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp) · '+
-      plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh · inverter '+num(plts.inverter.specs,'watts')+' W · MPPT '+num(plts.scc.specs,'amps')+' A</div>';
+      plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh · inverter '+num(plts.inverter.specs,'watts')+' W · MPPT '+num(plts.scc.specs,'amps')+' A'+(kgn?' · berat ±'+fmt0(kgn)+' kg':'')+'</div>';
+    h+=viabilityHtml(plts);
     const n=optimNotes(plts);
     if(n.length)h+='<h3>Catatan optimasi komponen</h3><div class="note">'+n.map(x=>'• '+esc(x)).join('<br>')+'</div>';
+  } else {
+    const kgn=lines.reduce((a,L)=>a+(L.weightKg||0)*L.qty,0);
+    if(kgn)h+='<div class="mut" style="margin:6px 0">Berat komponen (alat+material): ±'+fmt0(kgn)+' kg — belum termasuk bobot dasar kendaraan.</div>';
   }
+  h+='<h3>Lingkup pekerjaan & kesepakatan (SOW)</h3>'+sowHtml(S,lines,adv,plts);
   h+='<p class="mut">Estimasi berlaku 30 hari; harga final diverifikasi admin sebelum penawaran resmi.</p>'+
-     '<button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button> '+
-     '<button class="btn no-print" onclick="kirimWa()">📱 Kirim estimasi ke Admin (WhatsApp)</button>';
+     '<button class="btn no-print" onclick="kirimWa()">📱 Kirim estimasi ke Admin (WhatsApp)</button> '+
+     '<button class="btn ghost no-print" onclick="copyCfg()">🔗 Salin link konfigurasi</button> '+
+     '<button class="btn ghost no-print" onclick="unduhCsv()">⬇️ Unduh CSV</button> '+
+     '<button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button>';
   return h;
 }
 function update(){$('#rabOut').innerHTML=rabHtml();updateEst();}
@@ -522,12 +547,134 @@ $('#btnPlts').onclick=()=>{
   h+=summLine('Margin bengkel ('+t.marginPct+'%)','+'+fmt(t.margin));
   h+=summLine('PPN ('+t.ppnPct+'%)','+'+fmt(t.ppn));
   h+=summLine('Grand total','<b>'+fmt(t.total)+'</b>','grand');
+  h+=viabilityHtml(plts);
+  const kgn=plts.lines.reduce((a,L)=>a+(L.weightKg||0)*L.qty,0);
+  if(kgn)h+='<div class="mut" style="margin:8px 0">Berat total komponen: ±'+fmt0(kgn)+' kg (panel+baterai+BOS, belum termasuk rak/mounting tambahan).</div>';
   const n=optimNotes(plts);
   if(n.length)h+='<h3>Catatan optimasi komponen</h3><div class="note">'+n.map(x=>'• '+esc(x)).join('<br>')+'</div>';
-  h+='<p class="mut"><button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button> '+
-     '<button class="btn no-print" onclick="kirimWa()">📱 Kirim ke Admin (WhatsApp)</button></p>';
+  h+='<h3>Lingkup pekerjaan & kesepakatan (SOW)</h3>'+sowHtml({vehicleType:'plts'},plts.lines,null,plts);
+  h+='<p class="mut"><button class="btn no-print" onclick="kirimWa()">📱 Kirim ke Admin (WhatsApp)</button> '+
+     '<button class="btn ghost no-print" onclick="copyCfg()">🔗 Salin link konfigurasi</button> '+
+     '<button class="btn ghost no-print" onclick="unduhCsv()">⬇️ Unduh CSV</button> '+
+     '<button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button></p>';
   $('#pltsOut').innerHTML=h;
 };
+
+/* ===== util kelayakan & share-link ===== */
+const fmt0=n=>Math.round(n).toLocaleString('id-ID');
+let toastT=null;
+function toast(msg){
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>t.classList.add('show'));
+  clearTimeout(toastT);toastT=setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},2200);
+}
+function encodeCfg(){return btoa(unescape(encodeURIComponent(JSON.stringify(S)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function decodeCfg(str){
+  if(!str)return null;
+  try{
+    let t=str.replace(/-/g,'+').replace(/_/g,'/');
+    while(t.length%4)t+='=';
+    return JSON.parse(decodeURIComponent(escape(atob(t))));
+  }catch(e){return null;}
+}
+function shareLink(){try{return location.origin+location.pathname+'?cfg='+encodeCfg();}catch(e){return '';}}
+function copyCfg(){
+  const link=shareLink(); if(!link){toast('Tidak bisa membuat link');return;}
+  const done=()=>toast('Link konfigurasi disalin — tempel di WhatsApp/chat');
+  const fallback=()=>{if(window.prompt('Salin link konfigurasi ini:',link))done();};
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(link).then(done).catch(fallback);
+  else fallback();
+}
+function unduhCsv(){
+  const {lines}=buildRabLines(S);
+  if(!lines.length){alert('Susun dulu paket / add-on / kebutuhan listrik.');return;}
+  const q=c=>'"'+String(c).replace(/"/g,'""')+'"';
+  const row=(a,b,c2,d,e,f,g)=>[a,b||'',c2||'',d||'',e||'',f||'',g||''];
+  const rows=[row('Komponen','Kode','Kelompok','Qty','Satuan','Harga','Subtotal')];
+  for(const L of lines)rows.push(row(L.name,L.code,L.group||'',L.qty,L.unit,L.price,L.subtotal));
+  const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
+  const tot=adv?adv.grand:simpleTotals(lines).total;
+  if(adv){
+    rows.push(row('Limbah material ±'+adv.waste.avg+'%','','','','','',adv.waste.total));
+    if(adv.workDays>0)rows.push(row('Tenaga kerja ('+adv.workDays+' hari × '+CFG.hoursPerDay+' jam × '+CFG.laborRate+' /jam)','','',adv.workDays+' hari','','',adv.labor));
+    rows.push(row('Kompleksitas: '+adv.cx.label+' (×'+adv.cx.score.toFixed(2)+')'));
+    if(adv.vol.amount>0)rows.push(row('Diskon volume ('+adv.vol.pct+'%)','','','','','',-adv.vol.amount));
+    rows.push(row('Kontingensi '+adv.cont.pct+'% — '+adv.cont.reason,'','','','','',adv.cont.amount));
+    rows.push(row('PPN '+adv.ppnPct+'%','','','','','',adv.ppn));
+  }else{
+    const t=simpleTotals(lines);
+    rows.push(row('Margin bengkel '+t.marginPct+'%','','','','','',t.margin));
+    rows.push(row('PPN '+t.ppnPct+'%','','','','','',t.ppn));
+  }
+  rows.push(row('GRAND TOTAL','','','','','',tot));
+  const blob=new Blob(['\ufeff'+rows.map(r=>r.map(q).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='RAB-'+(S.vehicleType||'proyek')+'.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('CSV RAB terunduh ✓');
+}
+function viabilityHtml(plts){
+  const V=PLTS.batteryVoltage;
+  const prod=plts.pWp*plts.sun*PLTS.derating;
+  const auto=plts.batWh*PLTS.batteryDoD/plts.dailyWh;
+  const inv=num(plts.inverter.specs,'watts');
+  const sccA=num(plts.scc.specs,'amps');
+  const arus=Math.ceil(plts.pWp/V*PLTS.sccOversize);
+  const rows=[
+    ['Produksi panel','@sun '+plts.sun+' jam ≈ '+fmt0(prod)+' Wh/hari','vs kebutuhan '+fmt0(plts.dailyWh)+' Wh/hari',prod>=plts.dailyWh],
+    ['Cadangan baterai','autonomi '+auto.toFixed(1)+' hari (DoD 80%)','target ≥ 1 hari — sizing standar 2 hari',auto>=1],
+    ['Inverter vs beban puncak',fmt0(inv)+' W vs '+fmt0(plts.peakW)+' W','margin '+Math.max(0,Math.round((inv-plts.peakW)/Math.max(1,plts.peakW)*100))+'% (sizing ×1.25)',inv>=plts.peakW],
+    ['MPPT vs arus panel',sccA+' A vs '+fmt0(arus)+' A','arus = Wp ÷ '+V+' V × 1.25',sccA>=arus],
+  ];
+  let h='<h3>Cek kelayakan sistem</h3><table class="viab"><thead><tr><th style="text-align:left">Aspek</th><th>Hitungan</th><th style="text-align:left">Acuan</th><th style="text-align:right">Status</th></tr></thead><tbody>';
+  for(const r of rows)h+='<tr><td>'+esc(r[0])+'</td><td class="r">'+esc(r[1])+'</td><td class="mut">'+esc(r[2])+'</td><td class="r"><span class="badge '+(r[3]?'ok':'bad')+'">'+(r[3]?'OK ✓':'PERIKSA ✗')+'</span></td></tr>';
+  h+='</tbody></table>';
+  if(rows.some(r=>!r[3]))h+='<div class="warn">Ada aspek berstatus PERIKSA. Naikkan beban/panel/baterai hingga semua OK — atau kirim link konfigurasi ini ke admin untuk penyesuaian desain.</div>';
+  return h;
+}
+
+function sowHtml(s,lines,adv,plts){
+  const inCat=c=>lines.some(L=>L.category===c);
+  const catNames=c=>lines.filter(L=>L.category===c).map(L=>L.name);
+  const join=(arr,n)=>{const t=arr.slice(0,n||4).map(esc).join(', ');return t+(arr.length>(n||4)?' +'+(arr.length-(n||4))+' item lain':'')+(arr.length?'.':'');};
+  const scope=[['Desain & persiapan','samakan kebutuhan, pengukuran, sketsa layout sederhana, dan daftar material — kami konfirmasi desain ke Anda sebelum mulai memotong bahan.']];
+  const pkg=catNames('STRUKTUR');
+  if(pkg.length)scope.push(['Struktur & bodi','pembongkaran seperlunya, penguatan rangka, pelapis dinding/lantai ('+join(pkg)+'), anti-bocor & peredam seperlunya.']);
+  const int=catNames('INTERIOR');
+  if(int.length)scope.push(['Interior & finishing','fabrikasi furniture, pelapisan/finishing ('+join(int)+') mengikuti gambar yang sudah disetujui.']);
+  if(inCat('LISTRIK'))scope.push(['Instalasi kelistrikan kendaraan','titik lampu/saklar, sekuring/MCB, grounding, dan pengujian beban sebelum serah terima.']);
+  const alat=catNames('PERALATAN');
+  if(alat.length)scope.push(['Pemasangan peralatan & aksesori',join(alat)+' — dipasang, disambung, dan diuji fungsinya satu per satu.']);
+  if(inCat('PLTS_PANEL')||inCat('PLTS_BATTERY')||inCat('PLTS_INVERTER')||inCat('PLTS_SCC')||(plts&&plts.pWp>0))scope.push(['Instalasi PLTS / tenaga surya','panel terpasang & kabel rapi, baterai + inverter + MPPT menyala, pengujian pengisian/pemakaian, plus pendampingan cara pakai.']);
+  let dur;
+  if(s.vehicleType==='plts')dur='±2–3 hari kerja instalasi';
+  else if(adv&&adv.workDays>0)dur='±'+adv.workDays+' hari kerja di bengkel';
+  else dur='disesuaikan pesanan';
+  const kami=[
+    'Dikerjakan sesuai lingkup & material dalam dokumen ini — pembongkaran/pekerjaan di luar itu minta ijin dan persetujuan biaya lebih dahulu (cukup via WhatsApp).',
+    'Menyediakan pembaruan progres + foto pada tiap tahap besar kepada WhatsApp Anda.',
+    'Garansi pengerjaan 90 hari untuk cacat instalasi; garansi produk mengikuti ketentuan vendor masing-masing.',
+    'Serah terima bersih: fungsi diuji bersama Anda, area kerja dibersihkan, cara pemakaian dijelaskan.'];
+  const Anda=[
+    'Menyampaikan kebutuhan dan perubahan desain sedini mungkin — terlebih sebelum material mulai dipotong.',
+    'Menyediakan akses kendaraan/lokasi yang aman selama pengerjaan berlangsung.',
+    'Melunasi termin pembayaran sesuai jadwal yang dikonfirmasi admin.',
+    'Merawat pekerjaan sesuai panduan yang kami berikan agar garansi tetap berlaku.'];
+  const luar=[
+    'Kerusakan tersembunyi yang baru ketahuan saat pembongkaran (karat, rapuh, bocor lama): kami foto, laporkan, dan lanjut setelah Anda menyetujui biayanya.',
+    'Perbaikan wajib/rutin kendaraan (mesin, kelistrikan pabrik mobil).',
+    'Kerugian akibat pemakaian tidak sesuai panduan (mis. beban PLTS melebihi daya terpasang).'];
+  let h='<div class="sow"><div class="grow"><div><h4>🛠️ Lingkup pekerjaan</h4><ul>'+
+    scope.map(x=>'<li><b>'+esc(x[0])+'</b> — '+x[1]+'</li>').join('')+
+    '</ul><p class="mut">Jangka waktu estimasi: '+esc(dur)+' (belum termasuk lead-time barang, kira-kira 7–14 hari).</p></div>';
+  h+='<div><h4>🤝 Komitmen kami (bengkel)</h4><ul>'+kami.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+
+     '<h4>🙏 Hak & kewajiban Anda (konsumen)</h4><ul>'+Anda.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div></div>';
+  h+='<div class="luar"><h4>⚠️ Di luar lingkup — selalu beritahu kami dahulu</h4><ul>'+luar.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>';
+  h+='<p class="mut">Estimasi berlaku 30 hari: semua angka & lingkup mengacu pada dokumen ini. Jadwal, termin, dan garansi final dikonfirmasi admin EcoPower sebelum pengerjaan dimulai — konsultasinya gratis.</p></div>';
+  return h;
+}
 
 /* ===== WhatsApp admin ===== */
 const WA_PHONE='6285334398681';
@@ -549,8 +696,10 @@ function waText(){
     'PLTS: '+plts.pWp+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp), baterai '+
     plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh, inverter '+num(plts.inverter.specs,'watts')+' W, MPPT '+num(plts.scc.specs,'amps')+' A');
   akt.push('Estimasi grand total: '+fmt(tot)+' (berlaku 30 hari)');
-  return 'Halo EcoPower ID, saya baru memakai kalkulator RAB online.\n'+akt.join('\n')+
-    '\nMohon info harga final & jadwal produksinya. Terima kasih.';
+  let msg='Halo EcoPower ID, saya baru memakai kalkulator RAB online.\n'+akt.join('\n');
+  try{const L=shareLink();if(L)msg+='\n\nLink konfigurasi (bisa dibuka & diedit lagi): '+L;}catch(e){}
+  msg+='\nMohon info harga final & jadwal produksinya. Terima kasih.';
+  return msg;
 }
 function kirimWa(){
   const t=waText();
