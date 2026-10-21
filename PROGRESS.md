@@ -1,6 +1,6 @@
 # PROGRESS — Kalkulator RAB GitHub Pages (referensi: nasbpfsby.duckdns.org:8444)
 
-**Status: aplikasi sudah dibangun & diuji; riset perlengkapan/material di fase akhir. Terakhir: 2026-10-21 ~14:20 WIB**
+**Status: aplikasi lolos uji UI end-to-end (jsdom); riset appliance/material putaran perbaikan berjalan. Terakhir: 2026-10-21 ~15:05 WIB**
 
 ## Target
 - Satu `index.html` GitHub Pages: kalkulator RAB campervan/motorhome/food-truck/PLTS.
@@ -35,5 +35,16 @@
 ## Setelah riset berjalan
 - [ ] Agregasi hasil perlengkapan/material → update `RESEARCH.md §C`.
 - [ ] Kalibrasi harga aplikasi bila ada selisih besar vs pasar (target: tetap harga katalog vendor;
-  selebihnya dicatat sebagai rentang pasar).
+  selisih dicatat sebagai rentang pasar di RESEARCH.md).
+- [ ] Hasil riset putaran perbaikan (pompa/toilet/water-heater/vent/mesin kopi/fryer/griddle/hood/
+  kulkas display/freezer/kompor/upah) → update §C.
+
+## Uji fungsional (jsdom, Okt 21)
+- Load, tab switch, pilih paket PRM + add-on → Rp190,4 jt (CV-PRM penuh, yaw delta wajar).
+- Motorhome PRM + layout + PLTS: Rp529,7 jt; kompleksitas mentok cap 1,30 (perilaku referensi).
+- Food truck default STD: Rp103,7 jt.
+- Tabel harga: 79 baris, pencarian "baterai" → 3 baris PLTS_BATTERY.
+- Kalkulator PLTS: 6×450 Wp + 7×300 Ah untuk 8.000 Wh/hari & 1.000 W; margin 15% + PPN 11%.
+- Bug fix: (1) handler qty alat tidak menyimpan state; (2) fallback sizing baterai men-undersize
+  (4×300Ah untuk kebutuhan 1.667Ah) → sekarang fallback qty unlimited seperti referensi.
 - [ ] Final `PROGRESS.md`.

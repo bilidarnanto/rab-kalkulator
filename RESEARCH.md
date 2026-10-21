@@ -1,7 +1,7 @@
 # RESEARCH — Riset harga real untuk Kalkulator RAB (GitHub Pages)
 
 Tanggal riset: **21 Okt 2026**. Metode: crawling pasif — situs referensi (vendor EcoPower ID), artikel daftar harga suryaqua.com (Mei–Jul 2026), marketplace (Tokopedia/Lazada/Shopee via snippet mesin pencari), toko panelsuryajakarta.com. Bukti mentah: `research/*.html`, `artifacts/*`.
-> Semua angka dalam Rp. Lempeng [marketplace] = harga e-commerce; [premium] = brand tier-1; [vendor] = katalog EcoPower ID (survei harga kerja, Aug 2026).
+> Semua angka dalam Rp. Legenda [marketplace] = harga e-commerce; [premium] = brand tier-1; [vendor] = katalog EcoPower ID (survei harga kerja, Aug 2026).
 
 ## A. Mesin hitung situs referensi (dari chunk JS, bukan tebakan)
 
@@ -15,7 +15,7 @@ waste_g = Σ price_subtotal × waste%g      (per kelompok, gas di bawah)
 e = d + waste                             (subtotal + waste)
 I  = d  (base material)
 volumediscount = 3% jika d ≥ 100jt; else 2% jika d ≥ 50jt; else 1% jika d ≥ 25jt
-labor = max(workDays dikatalog linier ini) × 8 jam × Rp75.000
+labor = max(workDays dari spesifikasi paket pada RAB) × 8 jam × Rp75.000
 S = (d + waste) × skorKompleksitas        (kompleksitas 0,8–1,3, basis 1)
 X = S + labor − volumeDiscount
 Kontingensi = pct(S) → 3–10% (basis 5%, +3 skor ≥1.2, +2 skor ≥1.1, −2 jika <1)
@@ -90,9 +90,19 @@ Per A: 46.7 / 47.5 / 48.3 / 52.5 / 55 ribu → vendor versi OEM non-Victron.
 Vendor: kabel DC 6mm 25 rb/m; NYM 2.5 12 rb/m; MC4 30 rb/pasang; Fuse set 150 rb; DC breaker 250 rb; AC breaker 180 rb; Busbar 350 rb; Grounding kit 400 rb; Mounting 1.2 jt; JBox 300 rb.
 Verifikasi (suryaqua Mei-2026, 2200 Wp rumah): kabel DC + MC4 Rp 0.5–1 jt; MCB AC/DC Rp 0.5–1.2 jt; surge Rp 0.5–1 jt; conduit+box Rp 0.3–0.5 jt; **jasa instalasi Rp 3–5 jt** untuk 2.2 kWp (≈ Rp 1.4–2.3/Wp) → vendor jasa 2.000/Wp di dalam band.
 
-## C. Perlengkapan & material — *riset berjalan*
-(antrian Brave: berjalan di background; hasil akan diupdate di bagian ini saat fetch selesai)
-- Prioritas: kulkas 12V, kompor, pompa+tangki, toilet, water heater 12V, solar vent, mesin kopi, deep fryer, griddle, hood, kulkas display, freezer 200 L, plywood 12 mm, ACM/Alucobond 3 mm, HPL, kabel NYA/NYM per meter, MC4, MCB, roof rack, awning, upah tukang per hari.
+## C. Perlengkapan & material — hasil parsial (Okt 2026)
+Brave snippets Tokopedia/shops (bukti: `research/*.html`):
+| Item | Pasar (Okt 2026) | Katalog vendor | Nilai |
+|---|---|---|---|
+| Kulkas 12V DC 60 L portable (Taffware T50/T60, Alpicool, Colku) | **Rp4,49 jt** (Tokopedia Mei/Agst 2026, Alpicool/Taffware portable 12/24V) | CV-AD-FRIDGE Rp4,5 jt | pas ✅ |
+| Plywood/triplek 12 mm | Rp120–250 rb/lembar (Mei 2026) | MAT-PLY Rp5 jt/paket lapis finir (→~15–25 lembar equivalen) | wajar paket |
+| ACM / Alucobond 3 mm | Rp280–310 rb/lembar (Seven Marks 3 mm, inflasi 10–15%/2 thn); pasang Rp700rb+/m² | MAT-ALU Rp9 jt/paket ACM | wajar paket |
+| HPL 122×244 | Rp250–392 rb/lembar (Tokopedia Okt 2026) | MAT-HPL Rp7 jt/paket | wajar paket |
+| Kabel NYM 2×2,5 | Rp17,9 rb/m (LOTUS per meter retail) | PLTS-BOS-AC Rp12 rb/m (bulk) | vendor di bawah retail ✅ |
+| MCB AC 2P 33A | Rp88 rb (Chint NXB-63) s/d Rp348–405 rb (Schneider Domae) | PLTS-BOS-ACBRK Rp180 rb | di band ✅ |
+| MCB DC 1000V 2P (TOMZN TOB7Z-63) | Rp65 rb | PLTS-BOS-DCBRK Rp250 rb | vendor termasuk proteksi lebih; catat |
+| MC4 | (menunggu) | PLTS-BOS-MC4 Rp30 rb/pasang | — |
+Belum terverifikasi eksternal (stale → diulang): pompa+tangki, toilet, water-heater 12V, solar vent, mesin kopi, deep fryer, griddle, hood, kulkas display, freezer 200 L, kompor 2 tungku, upah tukang.
 
 ## D. Belum terverifikasi / ketidakpastian
 - AC 12V 12000 BTU & Roof AC — produk niche, harga pasar sangat bervariasi.

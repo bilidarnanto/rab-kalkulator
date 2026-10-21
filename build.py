@@ -209,9 +209,10 @@ function packPick(cat, need, key){      // optimasi: minimum biaya, qty ≤ bata
     const cost=c.price*q;
     if(!best||cost<best.cost||(cost===best.cost&&q<best.qty))best={comp:c,qty:q,cost};
   }
-  if(!best){ // fallback: unit terbesar dengan cap
+  if(!best){ // fallback: unit terbesar, qty tanpa batas (perilaku referensi)
     const l=catBy(cat).filter(c=>num(c.specs,key)>0).sort((a,b)=>num(b.specs,key)-num(a.specs,key));
-    best={comp:l[0],qty:cap,cost:l[0].price*cap};
+    const u=num(l[0].specs,key);
+    best={comp:l[0],qty:Math.max(1,Math.ceil(need/u))};
   }
   return best;
 }
@@ -328,8 +329,8 @@ function optimNotes(plts){
   n.push('Indikator Rp/A MPPT: '+fmt(rpA)+' — bila panel dibagi 2 string, 2×30 A sering lebih murah daripada 1×60 A.');
   if(plts.panel.comp!==smallPickDesc('PLTS_PANEL','wp'))
     n.push('Sizing hemat aktif: '+plts.pQty+'× '+num(spec(plts.panel.comp),'wp')+' Wp ('+fmt(plts.panel.comp.price)+'/unit) — lihat catatan Rp/Wp di atas.');
-  if(plts.bQty===PLTS.maxBatteryUnits)
-    n.push('Baterai mencapai batas '+PLTS.maxBatteryUnits+' unit — pertimbangkan baterai kapasitas lebih besar atau turunkan otonomi.');
+  if(plts.bQty>=4)
+    n.push('Baterai '+plts.bQty+' unit ('+((plts.batWh/1000).toFixed(1))+' kWh) — untuk aplikasi kendaraan pertimbangkan tegangan sistem lebih tinggi (24/48 V) atau kurangi konsumsi listrik malam hari.');
   if(plts.inverter&&num(spec(plts.inverter),'watts')>2.2*plts.peakW)
     n.push('Inverter melebihi 2× beban puncak — elemen beban bisa dilakukan bertahap (stagger) agar inverter lebih kecil.');
   if(plts.scc&&num(spec(plts.scc),'amps')<=30)
@@ -424,7 +425,14 @@ function renderApls(id){
       '<span class="w">jam</span></div>');
   }
   box.oninput=e=>{
-    if(e.target.matches('input')) save(); updateEst();
+    if(!e.target.matches('input'))return;
+    const t=e.target, q=t.dataset.q, h=t.dataset.h;
+    const code=q||h; if(!code)return;
+    const a=DATA.appliances.find(x=>x.code===code);
+    const o=S.appliances[code]=S.appliances[code]||{qty:0,hours:a.hours};
+    const v=Math.max(0,Number(t.value)||0);
+    if(q)o.qty=v; else o.hours=v;
+    save(); updateEst();
     if(id==='#apls') update();
   };
   box.onchange=e=>update();
@@ -453,7 +461,7 @@ function rabHtml(){
   const {lines,plts}=buildRabLines(S);
   let h='<h2>Rincian RAB <span class="tag mode">'+(S.vehicleType==='plts'?'PLTS':({
     campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck'}[S.vehicleType]))+'</span></h2>';
-  if(!lines.length){return h+'<div class="warn">Pilih paket konversi atau aktfnkan PLTS dahulu.</div>';}
+  if(!lines.length){return h+'<div class="warn">Pilih paket konversi atau aktifkan PLTS dahulu.</div>';}
   const groups={};
   for(const L of lines)(groups[L.group]=groups[L.group]||[]).push(L);
   h+='<h3>Rincian per kelompok</h3><table><thead><tr><th style="text-align:left">Komponen</th><th class="r">Harga</th><th class="r" width="52">Qty</th><th class="r" width="70">Satuan</th><th class="r">Subtotal</th></tr></thead><tbody>';
@@ -469,7 +477,7 @@ function rabHtml(){
   const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
   if(adv){
     const a=adv;
-    h+='<h3>Penjabaran biaya (radil vendor)</h3>';
+    h+='<h3>Penjabaran biaya (rincian vendor)</h3>';
     h+=summLine('Material dasar (katalog)',fmt(a.material));
     for(const [k,v] of Object.entries(a.waste.per))if(v.val>0)h+=summLine('Waste '+k+' ('+Math.round(v.pct*100)+'%)','+'+fmt(v.val));
     h+=summLine('Kompleksitas', '<span class="tag">'+a.cx.label+'</span> × '+a.cx.score.toFixed(2));
