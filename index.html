@@ -90,6 +90,26 @@ input[type=checkbox]{width:16px;height:16px;flex:none;margin-top:4px}
 .cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0 10px}
 .cmp th,.cmp td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
 .cmp .win{color:#166534;font-weight:800}
+.lang{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:8px;font-size:12.5px;padding:6px 10px;cursor:pointer}
+body.dark{background:#0c1420;color:#dbe6f1}
+body.dark .card{background:#122031;border-color:#243449}
+body.dark nav button{background:#122031;border-color:#243449;color:#dbe6f1}
+body.dark nav button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+body.dark select,body.dark input[type=number],body.dark input[type=text]{background:#0d1826;color:#dbe6f1;border-color:#243449}
+body.dark .btn.ghost{background:#122031;color:#dbe6f1;border-color:#243449}
+body.dark .opt{border-color:#243449}
+body.dark .opt label{color:#dbe6f1}
+body.dark .tag{background:#15331f;color:#8fdca3}
+body.dark th{background:#152635;color:#aebfd2}
+body.dark .gw{background:#152635;color:#dbe6f1}
+body.dark .note{background:#0f2418;border-color:#22503a;color:#9fe0ae}
+body.dark .warn{background:#271a0d;border-color:#5c4015;color:#f0c07f}
+body.dark .sow{background:#0f1a29;border-color:#243449;color:#dbe6f1}
+body.dark .sow h4{color:#b9cadb}
+body.dark .grand{border-top-color:#dbe6f1}
+body.dark .toast{outline:1px solid #334155}
+@media print{body.dark{background:#fff!important;color:#1e293b}
+body.dark .card,body.dark th,body.dark .gw{background:#fff!important;color:#1e293b!important}}
 .only-print{display:none}
 @media print{header,nav,.no-print{display:none!important}body{background:#fff}
 .only-print{display:flex!important}
@@ -105,7 +125,11 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
 <header>
   <img src="logo.jpg" alt="logo EcoPower ID" style="height:34px;width:34px;object-fit:cover;border-radius:9px;flex:none">
   <h1>Kalkulator RAB <span style="font-weight:400;opacity:.8;font-size:13px">· EcoPower ID</span></h1>
-  <small>Campervan · Motorhome · Food Truck · PLTS — harga real katalog vendor (Aug 2026), verifikasi pasar Okt 2026</small>
+  <small data-tr="Campervan · Motorhome · Food Truck · PLTS — harga real katalog vendor (Aug 2026), verifikasi pasar Okt 2026|Campervan · Motorhome · Food Truck · Solar — real vendor catalog prices (Aug 2026), market-checked Oct 2026">Campervan · Motorhome · Food Truck · PLTS — harga real katalog vendor (Aug 2026), verifikasi pasar Okt 2026</small>
+  <div style="margin-left:auto;display:flex;gap:6px;flex:none">
+    <button id="langBtn" title="Ganti bahasa / switch language">EN</button>
+    <button id="darkBtn" title="Mode gelap / dark mode">🌙</button>
+  </div>
 </header>
 <main>
 <div id="kop" class="only-print" style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
@@ -117,37 +141,37 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
   </div>
 </div>
 <nav class="no-print">
-  <button data-tab="conf" class="on">Konfigurator RAB</button>
-  <button data-tab="apl">Kalkulator PLTS</button>
-  <button data-tab="cat">Tabel Harga</button>
+  <button data-tab="conf" class="on" data-tr="Konfigurator RAB|RAB Configurator">Konfigurator RAB</button>
+  <button data-tab="apl" data-tr="Kalkulator PLTS|Solar Calculator">Kalkulator PLTS</button>
+  <button data-tab="cat" data-tr="Tabel Harga|Price List">Tabel Harga</button>
 </nav>
 
 <div id="tab-conf">
   <div class="grid">
     <section class="card pst">
-      <h2>1 · Tipe & paket</h2>
+      <h2 data-tr="1 · Tipe & paket|1 · Type & package">1 · Tipe & paket</h2>
       <div class="opt" id="vehList"></div>
-      <label>Paket konversi</label><select id="pkg"></select>
-      <label>Layout interior</label><select id="lay"></select>
-      <label>Material finishing</label><select id="mat"></select>
+      <label data-tr="Paket konversi|Conversion package">Paket konversi</label><select id="pkg"></select>
+      <label data-tr="Layout interior|Interior layout">Layout interior</label><select id="lay"></select>
+      <label data-tr="Material finishing|Finish material">Material finishing</label><select id="mat"></select>
       <div class="chk" style="margin-top:10px"><input type="checkbox" id="incPlts">
-        <div><b>Sistem PLTS (listrik mandiri)</b>
-        <div class="mut">Panel solar + baterai LiFePO4 + inverter + MPPT + proteksi + jasa.</div></div></div>
+        <div><b data-tr="Sistem PLTS (listrik mandiri)|Solar system (independent power)">Sistem PLTS (listrik mandiri)</b>
+        <div class="mut" data-tr="Panel solar + baterai LiFePO4 + inverter + MPPT + proteksi + jasa.|Solar panels + LiFePO4 battery + inverter + MPPT + protection + install service.">Panel solar + baterai LiFePO4 + inverter + MPPT + proteksi + jasa.</div></div></div>
       <div class="chk"><input type="checkbox" id="optSizing">
-        <div><b>Optimasi sizing komponen PLTS</b>
-        <div class="mut">Cari kombinasi unit terhemat (Rp/Wh & Rp/Wp terendah) yang memenuhi kebutuhan.</div></div></div>
+        <div><b data-tr="Optimasi sizing komponen PLTS|Optimize solar component sizing">Optimasi sizing komponen PLTS</b>
+        <div class="mut" data-tr="Cari kombinasi unit terhemat (Rp/Wh & Rp/Wp terendah) yang memenuhi kebutuhan.|Find the cheapest unit mix (lowest Rp/Wh & Rp/Wp) that meets the demand.">Cari kombinasi unit terhemat (Rp/Wh & Rp/Wp terendah) yang memenuhi kebutuhan.</div></div></div>
     </section>
     <section class="card pst">
-      <h2>2 · Kelengkapan (add-on)</h2>
+      <h2 data-tr="2 · Kelengkapan (add-on)|2 · Extras (add-ons)">2 · Kelengkapan (add-on)</h2>
       <div id="addons"></div>
     </section>
     <section class="card pst">
-      <h2>3 · Kebutuhan listrik harian</h2>
+      <h2 data-tr="3 · Kebutuhan listrik harian|3 · Daily power needs">3 · Kebutuhan listrik harian</h2>
       <div id="apls"></div>
       <div class="grid" style="margin-top:10px">
-        <div><label>Total harian manual (Wh)</label><input id="mWh" type="number" min="0" placeholder="otomatis"></div>
-        <div><label>Beban puncak manual (W)</label><input id="mPeak" type="number" min="0" placeholder="otomatis"></div>
-        <div><label>Peak sun hour harian (1–7)</label><input id="sun" type="number" step="0.1" min="1" max="7" value="4.5"></div>
+        <div><label data-tr="Total harian manual (Wh)|Manual daily total (Wh)">Total harian manual (Wh)</label><input id="mWh" type="number" min="0" placeholder="otomatis"></div>
+        <div><label data-tr="Beban puncak manual (W)|Manual peak load (W)">Beban puncak manual (W)</label><input id="mPeak" type="number" min="0" placeholder="otomatis"></div>
+        <div><label data-tr="Peak sun hour harian (1–7)|Daily peak sun hours (1–7)">Peak sun hour harian (1–7)</label><input id="sun" type="number" step="0.1" min="1" max="7" value="4.5"></div>
       </div>
       <div class="note" id="espEst"></div>
     </section>
@@ -158,25 +182,25 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
 
 <div id="tab-apl" hidden>
   <section class="card pst">
-    <h2>Kalkulator PLTS (sistem mandiri)</h2>
+    <h2 data-tr="Kalkulator PLTS (sistem mandiri)|Solar calculator (standalone)">Kalkulator PLTS (sistem mandiri)</h2>
     <div id="apls2"></div>
     <div class="grid" style="margin-top:10px">
-      <div><label>Total harian manual (Wh)</label><input id="mWh2" type="number" min="0" placeholder="otomatis"></div>
-      <div><label>Beban puncak manual (W)</label><input id="mPeak2" type="number" min="0" placeholder="otomatis"></div>
-      <div><label>Peak sun hour harian (1–7)</label><input id="sun2" type="number" step="0.1" min="1" max="7" value="4.5"></div>
+      <div><label data-tr="Total harian manual (Wh)|Manual daily total (Wh)">Total harian manual (Wh)</label><input id="mWh2" type="number" min="0" placeholder="otomatis"></div>
+      <div><label data-tr="Beban puncak manual (W)|Manual peak load (W)">Beban puncak manual (W)</label><input id="mPeak2" type="number" min="0" placeholder="otomatis"></div>
+      <div><label data-tr="Peak sun hour harian (1–7)|Daily peak sun hours (1–7)">Peak sun hour harian (1–7)</label><input id="sun2" type="number" step="0.1" min="1" max="7" value="4.5"></div>
     </div>
-    <button class="btn" id="btnPlts" style="margin-top:12px">Hitung & susun RAB PLTS</button>
+    <button class="btn" id="btnPlts" style="margin-top:12px" data-tr="Hitung & susun RAB PLTS|Calculate & build solar RAB">Hitung & susun RAB PLTS</button>
   </section>
   <section class="card" id="pltsOut"><div class="mut">Isi jumlah unit & jam pemakaian, lalu tekan hitung.</div></section>
 </div>
 
 <div id="tab-cat" hidden>
   <section class="card">
-    <h2>Harga komponen — katalog vendor (real, Aug 2026)</h2>
+    <h2 data-tr="Harga komponen — katalog vendor (real, Aug 2026)|Component prices — vendor catalog (real, Aug 2026)">Harga komponen — katalog vendor (real, Aug 2026)</h2>
     <input id="catQ" type="text" placeholder="Cari nama / kode…">
     <div id="catFilter" style="margin:10px 0"></div>
-    <table><thead><tr><th style="width:112px">Kode</th><th class="r">Harga satuan</th><th style="width:66px">Satuan</th><th>Nama</th><th style="width:96px">Kategori</th></tr></thead><tbody id="catBody"></tbody></table>
-    <p class="mut">Sumber: API <code>/api/catalog</code> situs referensi (Aug 2026) · banding riset & optimasi: <code>RESEARCH.md</code>.</p>
+    <table><thead><tr><th style="width:112px" data-tr="Kode|Code">Kode</th><th class="r" data-tr="Harga satuan|Unit price">Harga satuan</th><th style="width:66px" data-tr="Satuan|Unit">Satuan</th><th data-tr="Nama|Name">Nama</th><th style="width:96px" data-tr="Kategori|Category">Kategori</th></tr></thead><tbody id="catBody"></tbody></table>
+    <p class="mut" data-tr="Sumber: API /api/catalog situs referensi (Aug 2026) · banding riset & optimasi: RESEARCH.md.|Source: /api/catalog API of the reference site (Aug 2026) · price research & optimization: see RESEARCH.md.">Sumber: API <code>/api/catalog</code> situs referensi (Aug 2026) · banding riset & optimasi: <code>RESEARCH.md</code>.</p>
   </section>
 </div>
 </main>
@@ -330,18 +354,18 @@ function optimNotes(plts){
   const rpWh=plts.bat?plts.bat.comp.price/(num(spec(plts.bat.comp),'ah')*PLTS.batteryVoltage):0;
   const rpW=plts.inverter?plts.inverter.price/Math.max(1,num(spec(plts.inverter),'watts')):0;
   const rpA=plts.scc?plts.scc.price/Math.max(1,num(spec(plts.scc),'amps')):0;
-  n.push('Indikator Rp/Wp panel: '+fmt(rpWp)+' — unit 450–550 Wp ~Rp5.100/Wp, unit 100 Wp Rp9.500/Wp (2× lipat).');
-  n.push('Indikator Rp/Wh baterai: '+fmt(rpWh)+' — unit 200–300 Ah paling hemat per kWh.');
-  n.push('Indikator Rp/W inverter: '+fmt(rpW)+' — jaga beban puncak agar tidak terloncat ke kelas yang lebih besar.');
-  n.push('Indikator Rp/A MPPT: '+fmt(rpA)+' — bila panel dibagi 2 string, 2×30 A sering lebih murah daripada 1×60 A.');
+  n.push(T('Indikator Rp/Wp panel: |Panel price check: ')+fmt(rpWp)+T(' — unit 450–550 Wp ~Rp5.100/Wp, unit 100 Wp Rp9.500/Wp (2× lipat).| — 450–550 Wp panels run ~Rp5,100/Wp vs 100 Wp at Rp9,500/Wp (2× the price).'));
+  n.push(T('Indikator Rp/Wh baterai: |Battery price check: ')+fmt(rpWh)+T(' — unit 200–300 Ah paling hemat per kWh.| — 200–300 Ah units give the best value per kWh.'));
+  n.push(T('Indikator Rp/W inverter: |Inverter price check: ')+fmt(rpW)+T(' — jaga beban puncak agar tidak terloncat ke kelas yang lebih besar.| — keep the peak load below the tier threshold so you stay in this class.'));
+  n.push(T('Indikator Rp/A MPPT: |MPPT price check: ')+fmt(rpA)+T(' — bila panel dibagi 2 string, 2×30 A sering lebih murah daripada 1×60 A.| — if the panels split into 2 strings, 2×30 A is often cheaper than 1×60 A.'));
   if(plts.panel.comp!==smallPickDesc('PLTS_PANEL','wp'))
-    n.push('Sizing hemat aktif: '+plts.pQty+'× '+num(spec(plts.panel.comp),'wp')+' Wp ('+fmt(plts.panel.comp.price)+'/unit) — lihat catatan Rp/Wp di atas.');
+    n.push(T('Sizing hemat aktif: |Cost-optimized sizing: ')+plts.pQty+'× '+num(spec(plts.panel.comp),'wp')+' Wp ('+fmt(plts.panel.comp.price)+T('/unit) — lihat catatan Rp/Wp di atas.|/unit) — see the Rp/Wp check above.'));
   if(plts.bQty>=4)
-    n.push('Baterai '+plts.bQty+' unit ('+((plts.batWh/1000).toFixed(1))+' kWh) — untuk aplikasi kendaraan pertimbangkan tegangan sistem lebih tinggi (24/48 V) atau kurangi konsumsi listrik malam hari.');
+    n.push(T('Baterai |Battery ')+plts.bQty+T(' unit (| unit (')+((plts.batWh/1000).toFixed(1))+T(' kWh) — untuk aplikasi kendaraan pertimbangkan tegangan sistem lebih tinggi (24/48 V) atau kurangi konsumsi listrik malam hari.| kWh) — for vehicles consider a higher system voltage (24/48 V) or cut night-time loads.'));
   if(plts.inverter&&num(spec(plts.inverter),'watts')>2.2*plts.peakW)
-    n.push('Inverter melebihi 2× beban puncak — elemen beban bisa dilakukan bertahap (stagger) agar inverter lebih kecil.');
+    n.push(T('Inverter melebihi 2× beban puncak — elemen beban bisa dilakukan bertahap (stagger) agar inverter lebih kecil.|The inverter exceeds 2× the peak load — staggering loads in stages lets you use a smaller inverter.'));
   if(plts.scc&&num(spec(plts.scc),'amps')<=30)
-    n.push('MPPT 30 A cukup — nilai arus: '+plts.scc.code.replace('PLTS-SCC-','')+' A.');
+    n.push(T('MPPT 30 A cukup — nilai arus: |MPPT 30 A is enough — computed current: ')+plts.scc.code.replace('PLTS-SCC-','')+' A.');
   return n;
 }
 
@@ -355,18 +379,18 @@ try{Object.assign(S,JSON.parse(localStorage.getItem('rab.state')||'{}'));}catch(
 try{const mc=location.search.match(/[?&]cfg=([^&]+)/);if(mc){const cf=decodeCfg(mc[1]);if(cf)Object.assign(S,cf);}}catch(e){}
 const save=()=>{try{localStorage.setItem('rab.state',JSON.stringify(S));}catch(e){}};
 
-const VEH=[{id:'campervan',nm:'🚐 Campervan',d:'van konversi 1–4 orang'},
-  {id:'motorhome',nm:'🚌 Motorhome',d:'rumah berjalan 4–8 orang'},
-  {id:'foodtruck',nm:'🍔 Food Truck',d:'dapur di atas roda'},
-  {id:'plts',nm:'☀️ PLTS (rumah/lainnya)',d:'tanpa paket kendaraan'}];
+const VEH=[{id:'campervan',nm:'🚐 Campervan',d:'van konversi 1–4 orang|1–4 seater van conversion'},
+  {id:'motorhome',nm:'🚌 Motorhome',d:'rumah berjalan 4–8 orang|rolling home for 4–8 people'},
+  {id:'foodtruck',nm:'🍔 Food Truck',d:'dapur di atas roda|kitchen on wheels'},
+  {id:'plts',nm:'☀️ PLTS (rumah/lainnya)|☀️ Solar system (home/other)',d:'tanpa paket kendaraan|no vehicle package'}];
 const suf=v=>({campervan:'CV',motorhome:'MH',foodtruck:'FT'}[v]||'');
 
 function renderVeh(){
   const L=$('#vehList'); L.innerHTML='';
   for(const v of VEH){
     const lab=document.createElement('label');
-    lab.innerHTML='<input type="radio" name="veh" value="'+v.id+'" '+(S.vehicleType===v.id?'checked':'')+'> '+v.nm;
-    lab.title=v.d;
+    lab.innerHTML='<input type="radio" name="veh" value="'+v.id+'" '+(S.vehicleType===v.id?'checked':'')+'> '+T(v.nm);
+    lab.title=T(v.d);
     lab.onclick=()=>{
       S.vehicleType=v.id;
       S.addonCodes=[];S.layoutCode='';S.materialCode='';
@@ -388,9 +412,9 @@ function renderSteps(){
   for(const id of ['pkg','lay','mat'])$('#'+id).disabled=pltsMode;
   $('#incPlts').disabled=pltsMode;
   $('#pkg').style.opacity=$('#pkg').disabled?.5:1;
-  fillSelect($('#pkg'),catBy('STRUKTUR').filter(c=>c.code.startsWith(t+'-PKG')),S.packageCode,'— tanpa paket —');
-  fillSelect($('#lay'),catBy('INTERIOR').filter(c=>c.code.startsWith(t+'-LAY')),S.layoutCode,'— pilih layout —');
-  fillSelect($('#mat'),catBy('INTERIOR').filter(c=>c.code.startsWith('MAT-')),S.materialCode,'— tanpa finishing —');
+  fillSelect($('#pkg'),catBy('STRUKTUR').filter(c=>c.code.startsWith(t+'-PKG')),S.packageCode,T('— tanpa paket —|— no package —'));
+  fillSelect($('#lay'),catBy('INTERIOR').filter(c=>c.code.startsWith(t+'-LAY')),S.layoutCode,T('— pilih layout —|— choose layout —'));
+  fillSelect($('#mat'),catBy('INTERIOR').filter(c=>c.code.startsWith('MAT-')),S.materialCode,T('— tanpa finishing —|— no finish —'));
   $('#pkg').onchange=e=>{S.packageCode=e.target.value;save();renderAll();};
   $('#lay').onchange=e=>{S.layoutCode=e.target.value;save();renderAll();};
   $('#mat').onchange=e=>{S.materialCode=e.target.value;save();renderAll();};
@@ -402,11 +426,11 @@ function renderSteps(){
 
 function renderAddons(){
   const box=$('#addons'); box.innerHTML='';
-  if(S.vehicleType==='plts'){box.innerHTML='<div class="mut">— tidak berlaku untuk mode PLTS —</div>';return;}
+  if(S.vehicleType==='plts'){box.innerHTML='<div class="mut">'+T('— tidak berlaku untuk mode PLTS —|— not applicable in solar mode —')+'</div>';return;}
   const t=suf(S.vehicleType);
   const list=[...catBy('PERALATAN').filter(c=>c.code.startsWith(t+'-AD')),
               ...catBy('LISTRIK').filter(c=>c.code.startsWith(t+'-'))];
-  if(!list.length){box.innerHTML='<div class="mut">— tidak ada add-on —</div>';return;}
+  if(!list.length){box.innerHTML='<div class="mut">'+T('— tidak ada add-on —|— no add-ons —')+'</div>';return;}
   for(const c of list){
     const row=document.createElement('div');row.className='chk';
     row.innerHTML='<input type="checkbox" '+(S.addonCodes.includes(c.code)?'checked':'')+
@@ -429,8 +453,8 @@ function renderApls(id){
       '<div class="apl"><span class="nm">'+esc(a.name)+'</span><span class="w">'+a.watts+' W</span>'+
       '<input type="number" min="0" value="'+(st&&st.qty>0?st.qty:0)+'" data-q="'+a.code+'" title="unit">'+
       '<span class="w">unit ×</span>'+
-      '<input type="number" min="0" step="0.5" value="'+(st&&st.hours>0?st.hours:a.hours)+'" data-h="'+a.code+'" title="jam/hari">'+
-      '<span class="w">jam</span></div>');
+      '<input type="number" min="0" step="0.5" value="'+(st&&st.hours>0?st.hours:a.hours)+'" data-h="'+a.code+'" title="'+T('jam/hari|hours/day')+'">'+
+      '<span class="w">'+T('jam|hrs')+'</span></div>');
   }
   box.oninput=e=>{
     if(!e.target.matches('input'))return;
@@ -458,7 +482,7 @@ function bindManual(){
 }
 function updateEst(){
   const e=energyOf(S);
-  const t='Otomatis: '+e.dailyWh.toLocaleString('id-ID')+' Wh/hari · beban puncak '+e.peakW.toLocaleString('id-ID')+' W (ditimpa bila kolom manual diisi).';
+  const t=T('Otomatis: |Auto: ')+e.dailyWh.toLocaleString('id-ID')+T(' Wh/hari · beban puncak | Wh/day · peak load ')+e.peakW.toLocaleString('id-ID')+T(' W (ditimpa bila kolom manual diisi).| W (overridden by the manual fields).');
   const a=$('#espEst'); if(a)a.innerHTML=t;
 }
 
@@ -467,15 +491,16 @@ function summStmt(a){return summLine('Faktor bengkel (margin '+CFG.marginPct+'%)
 
 function rabHtml(){
   const {lines,plts}=buildRabLines(S);
-  let h='<h2>Rincian RAB <span class="tag mode">'+(S.vehicleType==='plts'?'PLTS':({
+  let h='<h2>'+T('Rincian RAB |RAB breakdown ')+'<span class="tag mode">'+(S.vehicleType==='plts'?'PLTS':({
     campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck'}[S.vehicleType]))+'</span></h2>';
-  if(!lines.length){return h+'<div class="warn">Pilih paket konversi atau aktifkan PLTS dahulu.</div>';}
+  if(!lines.length){return h+'<div class="warn">'+T('Pilih paket konversi atau aktifkan PLTS dahulu.|Choose a conversion package or enable solar first.')+'</div>';}
   const groups={};
   for(const L of lines)(groups[L.group]=groups[L.group]||[]).push(L);
-  h+='<h3>Rincian per kelompok</h3><table><thead><tr><th style="text-align:left">Komponen</th><th class="r">Harga</th><th class="r" width="52">Qty</th><th class="r" width="70">Satuan</th><th class="r">Subtotal</th></tr></thead><tbody>';
+  h+='<h3>'+T('Rincian per kelompok|Breakdown by group')+'</h3><table><thead><tr><th style="text-align:left">'+T('Komponen|Component')+'</th><th class="r">'+T('Harga|Price')+'</th><th class="r" width="52">Qty</th><th class="r" width="70">'+T('Satuan|Unit')+'</th><th class="r">Subtotal</th></tr></thead><tbody>';
   for(const gk of ['STRUKTUR','INTERIOR','PERALATAN','PLTS','LISTRIK','PLUMBING','JASA']){
     const g=groups[gk]; if(!g)continue;
-    h+='<tr><td colspan="4" style="background:#f8fafc;font-weight:700">'+gk+'</td><td class="r" style="background:#f8fafc;font-weight:700">'+fmt(g.reduce((a,L)=>a+L.subtotal,0))+'</td></tr>';
+    const gkT=({STRUKTUR:'Struktur|Structure',INTERIOR:'Interior',PERALATAN:'Peralatan|Equipment',PLTS:'PLTS',LISTRIK:'Listrik|Electrical',PLUMBING:'Plumbing',JASA:'Jasa|Services'})[gk]||gk;
+    h+='<tr><td colspan="4" class="gw" style="font-weight:700">'+T(gkT)+'</td><td class="r" style="font-weight:700">'+fmt(g.reduce((a,L)=>a+L.subtotal,0))+'</td></tr>';
     for(const L of g){
       h+='<tr><td>'+esc(L.name)+'<div class="mut">'+esc(L.code)+(L.spec?' · '+esc(L.spec):'')+'</div></td>'+
         '<td class="r">'+fmt(L.price)+'</td><td class="r">'+L.qty+'</td><td class="r mut">'+esc(L.unit)+'</td><td class="r">'+fmt(L.subtotal)+'</td></tr>';
@@ -485,41 +510,41 @@ function rabHtml(){
   const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
   if(adv){
     const a=adv;
-    h+='<h3>Penjabaran biaya (rincian vendor)</h3>';
-    h+=summLine('Material dasar (katalog)',fmt(a.material));
+    h+='<h3>'+T('Penjabaran biaya (rincian vendor)|Cost derivation (vendor detail)')+'</h3>';
+    h+=summLine(T('Material dasar (katalog)|Base materials (catalog)'),fmt(a.material));
     for(const [k,v] of Object.entries(a.waste.per))if(v.val>0)h+=summLine('Waste '+k+' ('+Math.round(v.pct*100)+'%)','+'+fmt(v.val));
-    h+=summLine('Kompleksitas', '<span class="tag">'+a.cx.label+'</span> × '+a.cx.score.toFixed(2));
-    if(a.workDays>0)h+=summLine('Tenaga kerja ('+a.workDays+' hari × '+CFG.hoursPerDay+' jam × '+fmt(CFG.laborRate)+'/jam)','+'+fmt(a.labor));
-    if(a.vol.amount>0)h+=summLine('Diskon volume ('+a.vol.pct+'%)','−'+fmt(a.vol.amount));
-    h+=summLine('Kontingensi ('+a.cont.pct+'% — '+esc(a.cont.reason)+')','+'+fmt(a.cont.amount));
-    h+=summLine('Total sebelum PPN',fmt(a.beforeTax),'grand');
-    h+=summLine('PPN ('+a.ppnPct+'%)','+'+fmt(a.ppn));
+    h+=summLine(T('Kompleksitas|Complexity'), '<span class="tag">'+a.cx.label+'</span> × '+a.cx.score.toFixed(2));
+    if(a.workDays>0)h+=summLine(T('Tenaga kerja (|Labor (')+a.workDays+T(' hari × | d × ')+CFG.hoursPerDay+T(' jam × | h × ')+fmt(CFG.laborRate)+T('/jam)|/hr)'),'+'+fmt(a.labor));
+    if(a.vol.amount>0)h+=summLine(T('Diskon volume (|Volume discount (')+a.vol.pct+'%)','−'+fmt(a.vol.amount));
+    h+=summLine(T('Kontingensi |Contingency (')+a.cont.pct+'% — '+esc(a.cont.reason)+')','+'+fmt(a.cont.amount));
+    h+=summLine(T('Total sebelum PPN|Total before VAT'),fmt(a.beforeTax),'grand');
+    h+=summLine(T('PPN |VAT (')+a.ppnPct+'%)','+'+fmt(a.ppn));
     h+=summLine('Grand total','<b>'+fmt(a.grand)+'</b>','grand');
   } else {
     const t=simpleTotals(lines);
     h+=summLine('Subtotal',fmt(t.subtotal));
-    h+=summLine('Margin bengkel ('+t.marginPct+'%)','+'+fmt(t.margin));
-    h+=summLine('PPN ('+t.ppnPct+'%)','+'+fmt(t.ppn));
+    h+=summLine(T('Margin bengkel (|Workshop margin (')+t.marginPct+'%)','+'+fmt(t.margin));
+    h+=summLine(T('PPN |VAT (')+t.ppnPct+'%)','+'+fmt(t.ppn));
     h+=summLine('Grand total','<b>'+fmt(t.total)+'</b>','grand');
   }
   if(plts){
     const kgn=lines.reduce((a,L)=>a+(L.weightKg||0)*L.qty,0);
     h+='<h3>Sistem PLTS terpilih</h3><div class="note">'+esc(plts.pWp)+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp) · '+
-      plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh · inverter '+num(plts.inverter.specs,'watts')+' W · MPPT '+num(plts.scc.specs,'amps')+' A'+(kgn?' · berat ±'+fmt0(kgn)+' kg':'')+'</div>';
+      plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh · inverter '+num(plts.inverter.specs,'watts')+' W · MPPT '+num(plts.scc.specs,'amps')+' A'+(kgn?T(' · berat ±| · weight ±')+fmt0(kgn)+' kg':'')+'</div>';
     h+=viabilityHtml(plts);
     const n=optimNotes(plts);
     if(n.length)h+='<h3>Catatan optimasi komponen</h3><div class="note">'+n.map(x=>'• '+esc(x)).join('<br>')+'</div>';
   } else {
     const kgn=lines.reduce((a,L)=>a+(L.weightKg||0)*L.qty,0);
-    if(kgn)h+='<div class="mut" style="margin:6px 0">Berat komponen (alat+material): ±'+fmt0(kgn)+' kg — belum termasuk bobot dasar kendaraan.</div>';
+    if(kgn)h+='<div class="mut" style="margin:6px 0">'+T('Berat komponen (alat+material): ±|Component weight (tools+materials): ±')+fmt0(kgn)+T(' kg — belum termasuk bobot dasar kendaraan.| kg — excluding the base vehicle weight.')+'</div>';
   }
-  h+='<h3>Lingkup pekerjaan & kesepakatan (SOW)</h3>'+sowHtml(S,lines,adv,plts);
+  h+='<h3>'+T('Lingkup pekerjaan & kesepakatan (SOW)|Scope of work & agreement (SOW)')+'</h3>'+sowHtml(S,lines,adv,plts);
   h+='<p class="mut">Estimasi berlaku 30 hari; harga final diverifikasi admin sebelum penawaran resmi.</p>'+
-     '<button class="btn no-print" onclick="kirimWa()">📱 Kirim estimasi ke Admin (WhatsApp)</button> '+
-     '<button class="btn ghost no-print" onclick="copyCfg()">🔗 Salin link konfigurasi</button> '+
-     '<button class="btn ghost no-print" onclick="unduhCsv()">⬇️ Unduh CSV</button> '+
-     '<button class="btn ghost no-print" onclick="simpanRiwayat()">💾 Simpan ke Riwayat</button> '+
-     '<button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button>';
+     '<button class="btn no-print" onclick="kirimWa()">'+T('📱 Kirim estimasi ke Admin (WhatsApp)|📱 Send estimate to Admin (WhatsApp)')+'</button> '+
+     '<button class="btn ghost no-print" onclick="copyCfg()">'+T('🔗 Salin link konfigurasi|🔗 Copy configuration link')+'</button> '+
+     '<button class="btn ghost no-print" onclick="unduhCsv()">'+T('⬇️ Unduh CSV|⬇️ Download CSV')+'</button> '+
+     '<button class="btn ghost no-print" onclick="simpanRiwayat()">'+T('💾 Simpan ke Riwayat|💾 Save to History')+'</button> '+
+     '<button class="btn ghost no-print" onclick="window.print()">'+T('🖨️ Cetak / simpan PDF|🖨️ Print / save PDF')+'</button>';
   return h;
 }
 function update(){$('#rabOut').innerHTML=rabHtml();updateEst();}
@@ -545,29 +570,29 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
 
 $('#btnPlts').onclick=()=>{
   const e=energyOf({...S,manualDailyWh:S.manualDailyWh,manualPeakW:S.manualPeakW});
-  if(e.dailyWh<=0||e.peakW<=0){$('#pltsOut').innerHTML='<div class="warn">Isi minimal 1 alat (unit & jam > 0) atau isi angka manual.</div>';return;}
+  if(e.dailyWh<=0||e.peakW<=0){$('#pltsOut').innerHTML='<div class="warn">'+T('Isi minimal 1 alat (unit & jam > 0) atau isi angka manual.|Fill at least one appliance (units & hours > 0) or use the manual fields.')+'</div>';return;}
   const plts=calculatePlts({dailyWh:e.dailyWh,peakW:e.peakW,sunHours:Number($('#sun2').value)||PLTS.sunHours},!!S.optSizing);
   const t=simpleTotals(plts.lines);
-  let h='<h2>Hasil & RAB PLTS</h2><div class="note">'+plts.pWp+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp) · '+
+  let h='<h2>'+T('Hasil & RAB PLTS|Solar result & RAB')+'</h2><div class="note">'+plts.pWp+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp) · '+
     plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh · inverter '+num(plts.inverter.specs,'watts')+' W · MPPT '+num(plts.scc.specs,'amps')+' A</div>';
-  h+='<h3>RAB PLTS</h3><table><thead><tr><th style="text-align:left">Item</th><th class="r">Qty (satuan)</th><th class="r">Harga</th><th class="r">Subtotal</th></tr></thead><tbody>';
+  h+='<h3>'+T('RAB PLTS|Solar RAB')+'</h3><table><thead><tr><th style="text-align:left">'+T('Item|Item')+'</th><th class="r">'+T('Qty (satuan)|Qty (unit)')+'</th><th class="r">'+T('Harga|Price')+'</th><th class="r">Subtotal</th></tr></thead><tbody>';
   for(const L of plts.lines)h+='<tr><td>'+esc(L.name)+'<div class="mut">'+esc(L.spec||L.code)+'</div></td><td class="r">'+L.qty+' '+esc(L.unit)+'</td><td class="r">'+fmt(L.price)+'</td><td class="r">'+fmt(L.subtotal)+'</td></tr>';
   h+='</tbody></table>';
   h+=summLine('Subtotal',fmt(t.subtotal));
-  h+=summLine('Margin bengkel ('+t.marginPct+'%)','+'+fmt(t.margin));
-  h+=summLine('PPN ('+t.ppnPct+'%)','+'+fmt(t.ppn));
+  h+=summLine(T('Margin bengkel (|Workshop margin (')+t.marginPct+'%)','+'+fmt(t.margin));
+  h+=summLine(T('PPN |VAT (')+t.ppnPct+'%)','+'+fmt(t.ppn));
   h+=summLine('Grand total','<b>'+fmt(t.total)+'</b>','grand');
   h+=viabilityHtml(plts);
   const kgn=plts.lines.reduce((a,L)=>a+(L.weightKg||0)*L.qty,0);
-  if(kgn)h+='<div class="mut" style="margin:8px 0">Berat total komponen: ±'+fmt0(kgn)+' kg (panel+baterai+BOS, belum termasuk rak/mounting tambahan).</div>';
+  if(kgn)h+='<div class="mut" style="margin:8px 0">'+T('Berat total komponen: ±|Total component weight: ±')+fmt0(kgn)+T(' kg (panel+baterai+BOS, belum termasuk rak/mounting tambahan).| kg (panels+battery+BOS, excluding extra mounting racks).')+'</div>';
   const n=optimNotes(plts);
   if(n.length)h+='<h3>Catatan optimasi komponen</h3><div class="note">'+n.map(x=>'• '+esc(x)).join('<br>')+'</div>';
-  h+='<h3>Lingkup pekerjaan & kesepakatan (SOW)</h3>'+sowHtml({vehicleType:'plts'},plts.lines,null,plts);
-  h+='<p class="mut"><button class="btn no-print" onclick="kirimWa()">📱 Kirim ke Admin (WhatsApp)</button> '+
-     '<button class="btn ghost no-print" onclick="copyCfg()">🔗 Salin link konfigurasi</button> '+
-     '<button class="btn ghost no-print" onclick="unduhCsv()">⬇️ Unduh CSV</button> '+
-     '<button class="btn ghost no-print" onclick="simpanRiwayat()">💾 Simpan ke Riwayat</button> '+
-     '<button class="btn ghost no-print" onclick="window.print()">🖨️ Cetak / simpan PDF</button></p>';
+  h+='<h3>'+T('Lingkup pekerjaan & kesepakatan (SOW)|Scope of work & agreement (SOW)')+'</h3>'+sowHtml({vehicleType:'plts'},plts.lines,null,plts);
+  h+='<p class="mut"><button class="btn no-print" onclick="kirimWa()">'+T('📱 Kirim ke Admin (WhatsApp)|📱 Send to Admin (WhatsApp)')+'</button> '+
+     '<button class="btn ghost no-print" onclick="copyCfg()">'+T('🔗 Salin link konfigurasi|🔗 Copy configuration link')+'</button> '+
+     '<button class="btn ghost no-print" onclick="unduhCsv()">'+T('⬇️ Unduh CSV|⬇️ Download CSV')+'</button> '+
+     '<button class="btn ghost no-print" onclick="simpanRiwayat()">'+T('💾 Simpan ke Riwayat|💾 Save to History')+'</button> '+
+     '<button class="btn ghost no-print" onclick="window.print()">'+T('🖨️ Cetak / simpan PDF|🖨️ Print / save PDF')+'</button></p>';
   $('#pltsOut').innerHTML=h;
 };
 
@@ -591,40 +616,40 @@ function decodeCfg(str){
 }
 function shareLink(){try{return location.origin+location.pathname+'?cfg='+encodeCfg();}catch(e){return '';}}
 function copyCfg(){
-  const link=shareLink(); if(!link){toast('Tidak bisa membuat link');return;}
-  const done=()=>toast('Link konfigurasi disalin — tempel di WhatsApp/chat');
-  const fallback=()=>{if(window.prompt('Salin link konfigurasi ini:',link))done();};
+  const link=shareLink(); if(!link){toast(T('Tidak bisa membuat link|Cannot create a link'));return;}
+  const done=()=>toast(T('Link konfigurasi disalin — tempel di WhatsApp/chat|Config link copied — paste it in WhatsApp/chat'));
+  const fallback=()=>{if(window.prompt(T('Salin link konfigurasi ini:|Copy this configuration link:'),link))done();};
   if(navigator.clipboard&&navigator.clipboard.writeText)
     navigator.clipboard.writeText(link).then(done).catch(fallback);
   else fallback();
 }
 function unduhCsv(){
   const {lines}=buildRabLines(S);
-  if(!lines.length){alert('Susun dulu paket / add-on / kebutuhan listrik.');return;}
+  if(!lines.length){alert(T('Susun dulu paket / add-on / kebutuhan listrik.|Build a package / add-on / power needs first.'));return;}
   const q=c=>'"'+String(c).replace(/"/g,'""')+'"';
   const row=(a,b,c2,d,e,f,g)=>[a,b||'',c2||'',d||'',e||'',f||'',g||''];
-  const rows=[row('Komponen','Kode','Kelompok','Qty','Satuan','Harga','Subtotal')];
+  const rows=[row(T('Komponen|Component'),T('Kode|Code'),T('Kelompok|Group'),'Qty',T('Satuan|Unit'),T('Harga|Price'),'Subtotal')];
   for(const L of lines)rows.push(row(L.name,L.code,L.group||'',L.qty,L.unit,L.price,L.subtotal));
   const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
   const tot=adv?adv.grand:simpleTotals(lines).total;
   if(adv){
-    rows.push(row('Limbah material ±'+adv.waste.avg+'%','','','','','',adv.waste.total));
-    if(adv.workDays>0)rows.push(row('Tenaga kerja ('+adv.workDays+' hari × '+CFG.hoursPerDay+' jam × '+CFG.laborRate+' /jam)','','',adv.workDays+' hari','','',adv.labor));
-    rows.push(row('Kompleksitas: '+adv.cx.label+' (×'+adv.cx.score.toFixed(2)+')'));
-    if(adv.vol.amount>0)rows.push(row('Diskon volume ('+adv.vol.pct+'%)','','','','','',-adv.vol.amount));
-    rows.push(row('Kontingensi '+adv.cont.pct+'% — '+adv.cont.reason,'','','','','',adv.cont.amount));
-    rows.push(row('PPN '+adv.ppnPct+'%','','','','','',adv.ppn));
+    rows.push(row(T('Limbah material ±|Material waste ±')+adv.waste.avg+'%','','','','','',adv.waste.total));
+    if(adv.workDays>0)rows.push(row(T('Tenaga kerja (|Labor (')+adv.workDays+T(' hari × | d × ')+CFG.hoursPerDay+T(' jam × | h × ')+CFG.laborRate+T(' /jam)| /hr)'),'','',adv.workDays+T(' hari| d'),'','',adv.labor));
+    rows.push(row(T('Kompleksitas: |Complexity: ')+adv.cx.label+' (×'+adv.cx.score.toFixed(2)+')'));
+    if(adv.vol.amount>0)rows.push(row(T('Diskon volume (|Volume discount (')+adv.vol.pct+'%)','','','','','',-adv.vol.amount));
+    rows.push(row(T('Kontingensi |Contingency ')+adv.cont.pct+'% — '+adv.cont.reason,'','','','','',adv.cont.amount));
+    rows.push(row(T('PPN |VAT ')+adv.ppnPct+'%','','','','','',adv.ppn));
   }else{
     const t=simpleTotals(lines);
-    rows.push(row('Margin bengkel '+t.marginPct+'%','','','','','',t.margin));
-    rows.push(row('PPN '+t.ppnPct+'%','','','','','',t.ppn));
+    rows.push(row(T('Margin bengkel |Workshop margin ')+t.marginPct+'%','','','','','',t.margin));
+    rows.push(row(T('PPN |VAT ')+t.ppnPct+'%','','','','','',t.ppn));
   }
   rows.push(row('GRAND TOTAL','','','','','',tot));
   const blob=new Blob(['\ufeff'+rows.map(r=>r.map(q).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob); a.download='RAB-'+(S.vehicleType||'proyek')+'.csv';
   document.body.appendChild(a); a.click(); a.remove();
-  toast('CSV RAB terunduh ✓');
+  toast(T('CSV RAB terunduh ✓|RAB CSV downloaded ✓'));
 }
 function viabilityHtml(plts){
   const V=PLTS.batteryVoltage;
@@ -634,15 +659,15 @@ function viabilityHtml(plts){
   const sccA=num(plts.scc.specs,'amps');
   const arus=Math.ceil(plts.pWp/V*PLTS.sccOversize);
   const rows=[
-    ['Produksi panel','@sun '+plts.sun+' jam ≈ '+fmt0(prod)+' Wh/hari','vs kebutuhan '+fmt0(plts.dailyWh)+' Wh/hari',prod>=plts.dailyWh],
-    ['Cadangan baterai','autonomi '+auto.toFixed(1)+' hari (DoD 80%)','target ≥ 1 hari — sizing standar 2 hari',auto>=1],
-    ['Inverter vs beban puncak',fmt0(inv)+' W vs '+fmt0(plts.peakW)+' W','margin '+Math.max(0,Math.round((inv-plts.peakW)/Math.max(1,plts.peakW)*100))+'% (sizing ×1.25)',inv>=plts.peakW],
-    ['MPPT vs arus panel',sccA+' A vs '+fmt0(arus)+' A','arus = Wp ÷ '+V+' V × 1.25',sccA>=arus],
+    [T('Produksi panel|Panel output'),'@sun '+plts.sun+T(' jam ≈ | h ≈ ')+fmt0(prod)+T(' Wh/hari| Wh/day'),T('vs kebutuhan |vs daily demand ')+fmt0(plts.dailyWh)+T(' Wh/hari| Wh/day'),prod>=plts.dailyWh],
+    [T('Cadangan baterai|Battery reserve'),'autonomi '+auto.toFixed(1)+T(' hari (DoD 80%)| days of autonomy (DoD 80%)'),T('target ≥ 1 hari — sizing standar 2 hari|target ≥ 1 day — standard sizing uses 2 days'),auto>=1],
+    [T('Inverter vs beban puncak|Inverter vs peak load'),fmt0(inv)+' W vs '+fmt0(plts.peakW)+' W',T('margin |margin ')+Math.max(0,Math.round((inv-plts.peakW)/Math.max(1,plts.peakW)*100))+'%'+T(' (sizing ×1.25)| (sizing ×1.25)'),inv>=plts.peakW],
+    [T('MPPT vs arus panel|MPPT vs panel current'),sccA+' A vs '+fmt0(arus)+' A',T('arus = Wp ÷ |current = Wp ÷ ')+V+' V × 1.25',sccA>=arus],
   ];
-  let h='<h3>Cek kelayakan sistem</h3><table class="viab"><thead><tr><th style="text-align:left">Aspek</th><th>Hitungan</th><th style="text-align:left">Acuan</th><th style="text-align:right">Status</th></tr></thead><tbody>';
-  for(const r of rows)h+='<tr><td>'+esc(r[0])+'</td><td class="r">'+esc(r[1])+'</td><td class="mut">'+esc(r[2])+'</td><td class="r"><span class="badge '+(r[3]?'ok':'bad')+'">'+(r[3]?'OK ✓':'PERIKSA ✗')+'</span></td></tr>';
+  let h='<h3>'+T('Cek kelayakan sistem|System viability check')+'</h3><table class="viab"><thead><tr><th style="text-align:left">'+T('Aspek|Aspect')+'</th><th>'+T('Hitungan|Calculation')+'</th><th style="text-align:left">'+T('Acuan|Benchmark')+'</th><th style="text-align:right">'+T('Status|Status')+'</th></tr></thead><tbody>';
+  for(const r of rows)h+='<tr><td>'+esc(r[0])+'</td><td class="r">'+esc(r[1])+'</td><td class="mut">'+esc(r[2])+'</td><td class="r"><span class="badge '+(r[3]?'ok':'bad')+'">'+(r[3]?'OK ✓':T('PERIKSA ✗|CHECK ✗'))+'</span></td></tr>';
   h+='</tbody></table>';
-  if(rows.some(r=>!r[3]))h+='<div class="warn">Ada aspek berstatus PERIKSA. Naikkan beban/panel/baterai hingga semua OK — atau kirim link konfigurasi ini ke admin untuk penyesuaian desain.</div>';
+  if(rows.some(r=>!r[3]))h+='<div class="warn">'+T('Ada aspek berstatus PERIKSA. Naikkan beban/panel/baterai hingga semua OK — atau kirim link konfigurasi ini ke admin untuk penyesuaian desain.|Some aspects show CHECK. Increase the load/panels/battery until all OK — or send this config link to the admin for design help.')+'</div>';
   return h;
 }
 
@@ -650,40 +675,40 @@ function sowHtml(s,lines,adv,plts){
   const inCat=c=>lines.some(L=>L.category===c);
   const catNames=c=>lines.filter(L=>L.category===c).map(L=>L.name);
   const join=(arr,n)=>{const t=arr.slice(0,n||4).map(esc).join(', ');return t+(arr.length>(n||4)?' +'+(arr.length-(n||4))+' item lain':'')+(arr.length?'.':'');};
-  const scope=[['Desain & persiapan','samakan kebutuhan, pengukuran, sketsa layout sederhana, dan daftar material — kami konfirmasi desain ke Anda sebelum mulai memotong bahan.']];
+  const scope=[[T('Desain & persiapan|Design & preparation'),T('samakan kebutuhan, pengukuran, sketsa layout sederhana, dan daftar material — kami konfirmasi desain ke Anda sebelum mulai memotong bahan.|we align on needs, take measurements, sketch a simple layout and draft the materials list — the design is confirmed with you before any cutting starts.')]];
   const pkg=catNames('STRUKTUR');
-  if(pkg.length)scope.push(['Struktur & bodi','pembongkaran seperlunya, penguatan rangka, pelapis dinding/lantai ('+join(pkg)+'), anti-bocor & peredam seperlunya.']);
+  if(pkg.length)scope.push([T('Struktur & bodi|Structure & body'),T('pembongkaran seperlunya, penguatan rangka, pelapis dinding/lantai (|as-needed disassembly, frame reinforcement, wall/floor lining (')+join(pkg)+T('), anti-bocor & peredam seperlunya.|), leak-proofing & damping as needed.')]);
   const int=catNames('INTERIOR');
-  if(int.length)scope.push(['Interior & finishing','fabrikasi furniture, pelapisan/finishing ('+join(int)+') mengikuti gambar yang sudah disetujui.']);
-  if(inCat('LISTRIK'))scope.push(['Instalasi kelistrikan kendaraan','titik lampu/saklar, sekuring/MCB, grounding, dan pengujian beban sebelum serah terima.']);
+  if(int.length)scope.push([T('Interior & finishing|Interior & finish'),T('fabrikasi furniture, pelapisan/finishing (|fabricated furniture, lining & finishing (')+join(int)+T(') mengikuti gambar yang sudah disetujui.|) following the approved drawing.')]);
+  if(inCat('LISTRIK'))scope.push([T('Instalasi kelistrikan kendaraan|Vehicle electrical installation'),T('titik lampu/saklar, sekuring/MCB, grounding, dan pengujian beban sebelum serah terima.|light and switch points, circuit breakers/MCB, grounding, and a load test before handover.')]);
   const alat=catNames('PERALATAN');
-  if(alat.length)scope.push(['Pemasangan peralatan & aksesori',join(alat)+' — dipasang, disambung, dan diuji fungsinya satu per satu.']);
-  if(inCat('PLTS_PANEL')||inCat('PLTS_BATTERY')||inCat('PLTS_INVERTER')||inCat('PLTS_SCC')||(plts&&plts.pWp>0))scope.push(['Instalasi PLTS / tenaga surya','panel terpasang & kabel rapi, baterai + inverter + MPPT menyala, pengujian pengisian/pemakaian, plus pendampingan cara pakai.']);
+  if(alat.length)scope.push([T('Pemasangan peralatan & aksesori|Equipment & accessory installation'),join(alat)+T(' — dipasang, disambung, dan diuji fungsinya satu per satu.| — mounted, wired and tested one by one.')]);
+  if(inCat('PLTS_PANEL')||inCat('PLTS_BATTERY')||inCat('PLTS_INVERTER')||inCat('PLTS_SCC')||(plts&&plts.pWp>0))scope.push([T('Instalasi PLTS / tenaga surya|Solar PV installation'),T('panel terpasang & kabel rapi, baterai + inverter + MPPT menyala, pengujian pengisian/pemakaian, plus pendampingan cara pakai.|panels mounted & cabled neatly, battery + inverter + MPPT powered up, charge/load testing, plus usage guidance.')]);
   let dur;
-  if(s.vehicleType==='plts')dur='±2–3 hari kerja instalasi';
-  else if(adv&&adv.workDays>0)dur='±'+adv.workDays+' hari kerja di bengkel';
-  else dur='disesuaikan pesanan';
+  if(s.vehicleType==='plts')dur=T('±2–3 hari kerja instalasi|±2–3 days of installation work');
+  else if(adv&&adv.workDays>0)dur='±'+adv.workDays+T(' hari kerja di bengkel| days of workshop work');
+  else dur=T('disesuaikan pesanan|tailored to the order');
   const kami=[
-    'Dikerjakan sesuai lingkup & material dalam dokumen ini — pembongkaran/pekerjaan di luar itu minta ijin dan persetujuan biaya lebih dahulu (cukup via WhatsApp).',
-    'Menyediakan pembaruan progres + foto pada tiap tahap besar kepada WhatsApp Anda.',
-    'Garansi pengerjaan 90 hari untuk cacat instalasi; garansi produk mengikuti ketentuan vendor masing-masing.',
-    'Serah terima bersih: fungsi diuji bersama Anda, area kerja dibersihkan, cara pemakaian dijelaskan.'];
+    T('Dikerjakan sesuai lingkup & material dalam dokumen ini — pembongkaran/pekerjaan di luar itu minta ijin dan persetujuan biaya lebih dahulu (cukup via WhatsApp).|We build exactly to the scope & materials in this document — any work outside it needs your prior approval and cost agreement (WhatsApp is enough).'),
+    T('Menyediakan pembaruan progres + foto pada tiap tahap besar kepada WhatsApp Anda.|We send progress updates + photos to your WhatsApp at every major stage.'),
+    T('Garansi pengerjaan 90 hari untuk cacat instalasi; garansi produk mengikuti ketentuan vendor masing-masing.|90-day workmanship warranty for installation defects; product warranty follows each vendor\'s own terms.'),
+    T('Serah terima bersih: fungsi diuji bersama Anda, area kerja dibersihkan, cara pemakaian dijelaskan.|Clean handover: functions tested together, work area cleaned, usage explained.')];
   const Anda=[
-    'Menyampaikan kebutuhan dan perubahan desain sedini mungkin — terlebih sebelum material mulai dipotong.',
-    'Menyediakan akses kendaraan/lokasi yang aman selama pengerjaan berlangsung.',
-    'Melunasi termin pembayaran sesuai jadwal yang dikonfirmasi admin.',
-    'Merawat pekerjaan sesuai panduan yang kami berikan agar garansi tetap berlaku.'];
+    T('Menyampaikan kebutuhan dan perubahan desain sedini mungkin — terlebih sebelum material mulai dipotong.|Share your needs and design changes early — especially before materials are cut.'),
+    T('Menyediakan akses kendaraan/lokasi yang aman selama pengerjaan berlangsung.|Provide safe access to the vehicle/site while the work is in progress.'),
+    T('Melunasi termin pembayaran sesuai jadwal yang dikonfirmasi admin.|Settle the payment installments on the schedule confirmed by the admin.'),
+    T('Merawat pekerjaan sesuai panduan yang kami berikan agar garansi tetap berlaku.|Maintain the work as per our guidance to keep the warranty valid.')];
   const luar=[
-    'Kerusakan tersembunyi yang baru ketahuan saat pembongkaran (karat, rapuh, bocor lama): kami foto, laporkan, dan lanjut setelah Anda menyetujui biayanya.',
-    'Perbaikan wajib/rutin kendaraan (mesin, kelistrikan pabrik mobil).',
-    'Kerugian akibat pemakaian tidak sesuai panduan (mis. beban PLTS melebihi daya terpasang).'];
-  let h='<div class="sow"><div class="grow"><div><h4>🛠️ Lingkup pekerjaan</h4><ul>'+
+    T('Kerusakan tersembunyi yang baru ketahuan saat pembongkaran (karat, rapuh, bocor lama): kami foto, laporkan, dan lanjut setelah Anda menyetujui biayanya.|Hidden damage discovered during disassembly (rust, rot, old leaks): we photograph, report, and continue after you approve the cost.'),
+    T('Perbaikan wajib/rutin kendaraan (mesin, kelistrikan pabrik mobil).|Mandatory/routine vehicle repairs (engine, factory wiring).'),
+    T('Kerugian akibat pemakaian tidak sesuai panduan (mis. beban PLTS melebihi daya terpasang).|Damage from use contrary to our guidance (e.g. solar loads above the installed capacity).')];
+  let h='<div class="sow"><div class="grow"><div><h4>'+T('🛠️ Lingkup pekerjaan|🛠️ Scope of work')+'</h4><ul>'+
     scope.map(x=>'<li><b>'+esc(x[0])+'</b> — '+x[1]+'</li>').join('')+
-    '</ul><p class="mut">Jangka waktu estimasi: '+esc(dur)+' (belum termasuk lead-time barang, kira-kira 7–14 hari).</p></div>';
-  h+='<div><h4>🤝 Komitmen kami (bengkel)</h4><ul>'+kami.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+
-     '<h4>🙏 Hak & kewajiban Anda (konsumen)</h4><ul>'+Anda.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div></div>';
-  h+='<div class="luar"><h4>⚠️ Di luar lingkup — selalu beritahu kami dahulu</h4><ul>'+luar.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>';
-  h+='<p class="mut">Estimasi berlaku 30 hari: semua angka & lingkup mengacu pada dokumen ini. Jadwal, termin, dan garansi final dikonfirmasi admin EcoPower sebelum pengerjaan dimulai — konsultasinya gratis.</p></div>';
+    '</ul><p class="mut">'+T('Jangka waktu estimasi: |Estimated duration: ')+esc(dur)+T(' (belum termasuk lead-time barang, kira-kira 7–14 hari).| (excluding material lead time, roughly 7–14 days).')+'</p></div>';
+  h+='<div><h4>'+T('🤝 Komitmen kami (bengkel)|🤝 Our commitments (workshop)')+'</h4><ul>'+kami.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+
+     '<h4>'+T('🙏 Hak & kewajiban Anda (konsumen)|🙏 Your rights & duties (customer)')+'</h4><ul>'+Anda.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div></div>';
+  h+='<div class="luar"><h4>'+T('⚠️ Di luar lingkup — selalu beritahu kami dahulu|⚠️ Out of scope — always tell us first')+'</h4><ul>'+luar.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>';
+  h+='<p class="mut">'+T('Estimasi berlaku 30 hari: semua angka & lingkup mengacu pada dokumen ini. Jadwal, termin, dan garansi final dikonfirmasi admin EcoPower sebelum pengerjaan dimulai — konsultasinya gratis.|Estimate valid for 30 days: all figures & scope follow this document. Final schedule, installments and warranty are confirmed by the EcoPower admin before work starts — the consultation is free.')+'</p></div>';
   return h;
 }
 
@@ -694,11 +719,11 @@ const bandSel=new Set();
 function snapLabel(){
   const t={campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck'}[S.vehicleType]||'';
   const pk=S.packageCode&&A_MAP[S.packageCode]?A_MAP[S.packageCode].name:'';
-  return (S.vehicleType==='plts'?'PLTS mandiri':t+(pk?' · '+pk:''))+(S.addonCodes.length?' +'+S.addonCodes.length+' add-on':'');
+  return (S.vehicleType==='plts'?T('PLTS mandiri|Standalone solar'):t+(pk?' · '+pk:''))+(S.addonCodes.length?' +'+S.addonCodes.length+' add-on':'');
 }
 function simpanRiwayat(){
   const {lines,plts}=buildRabLines(S);
-  if(!lines.length){alert('Susun dulu paket / add-on / kebutuhan listrik.');return;}
+  if(!lines.length){alert(T('Susun dulu paket / add-on / kebutuhan listrik.|Build a package / add-on / power needs first.'));return;}
   const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
   const kgn=lines.reduce((a,L)=>a+(L.weightKg||0)*L.qty,0);
   const e={id:Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36),ts:Date.now(),
@@ -713,24 +738,24 @@ function simpanRiwayat(){
 }
 function muatRiwayat(id){
   const e=histLoad().find(x=>x.id===id);if(!e)return;
-  const cf=decodeCfg(e.cfg);if(!cf){toast('Snapshot rusak');return;}
+  const cf=decodeCfg(e.cfg);if(!cf){toast(T('Snapshot rusak|Broken snapshot'));return;}
   Object.assign(S,cf);save();
   renderAll();renderRiwayat();
-  toast('Konfigurasi dimuat dari riwayat ✓');
+  toast(T('Konfigurasi dimuat dari riwayat ✓|Configuration loaded from history ✓'));
   try{$('#rabOut').scrollIntoView({behavior:'smooth',block:'start'});}catch(x){}
 }
-function hapusRiwayat(id){histSave(histLoad().filter(x=>x.id!==id));bandSel.delete(id);renderRiwayat();toast('Entri dihapus');}
+function hapusRiwayat(id){histSave(histLoad().filter(x=>x.id!==id));bandSel.delete(id);renderRiwayat();toast(T('Entri dihapus|Entry deleted'));}
 function salinHist(id){
   const e=histLoad().find(x=>x.id===id);if(!e)return;
   const link=location.origin+location.pathname+'?cfg='+e.cfg;
-  const done=()=>toast('Link snapshot disalin ✓');
-  const fb=()=>{if(window.prompt('Salin link snapshot:',link))done();};
+  const done=()=>toast(T('Link snapshot disalin ✓|Snapshot link copied ✓'));
+  const fb=()=>{if(window.prompt(T('Salin link snapshot:|Copy the snapshot link:'),link))done();};
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(link).then(done).catch(fb);
   else fb();
 }
 function toggleBanding(id){
   if(bandSel.has(id))bandSel.delete(id);
-  else{if(bandSel.size>=3){toast('Bandingkan maksimal 3 penawaran');return;}bandSel.add(id);}
+  else{if(bandSel.size>=3){toast(T('Bandingkan maksimal 3 penawaran|Compare up to 3 quotes'));return;}bandSel.add(id);}
   renderRiwayat();
 }
 function histLabel(e){
@@ -740,17 +765,17 @@ function histLabel(e){
 function bandingHtml(list){
   const min=Math.min.apply(null,list.map(e=>e.tot));
   const rows=[
-    ['Grand total',e=>'<b>'+fmt(e.tot)+'</b>'],
-    ['Tipe',e=>esc({campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck',plts:'PLTS mandiri'}[e.veh]||e.veh)],
-    ['Paket',e=>e.pkg&&A_MAP[e.pkg]?esc(A_MAP[e.pkg].name):(e.veh==='plts'?'—':'tanpa paket')],
+    [T('Grand total|Grand total'),e=>'<b>'+fmt(e.tot)+'</b>'],
+    [T('Tipe|Type'),e=>esc({campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck',plts:T('PLTS mandiri|Standalone solar')}[e.veh]||e.veh)],
+    [T('Paket|Package'),e=>e.pkg&&A_MAP[e.pkg]?esc(A_MAP[e.pkg].name):(e.veh==='plts'?'—':T('tanpa paket|no package'))],
     ['Add-on',e=>e.addons?'+'+e.addons:'—'],
     ['PLTS',e=>e.wp?e.wp+' Wp · '+e.kwh+' kWh':'—'],
     ['Inverter / MPPT',e=>e.wp?e.inv+' W / '+e.scc+' A':'—'],
-    ['Tenaga kerja',e=>e.wd?e.wd+' hari kerja':'—'],
-    ['Kompleksitas',e=>e.cx?'×'+Number(e.cx).toFixed(2):'—'],
-    ['Berat komponen',e=>e.kg?'±'+e.kg+' kg':'—'],
+    [T('Tenaga kerja|Labor'),e=>e.wd?e.wd+T(' hari kerja| working days'):'—'],
+    [T('Kompleksitas|Complexity'),e=>e.cx?'×'+Number(e.cx).toFixed(2):'—'],
+    [T('Berat komponen|Weight'),e=>e.kg?'±'+e.kg+' kg':'—'],
   ];
-  let h='<h3>⚖️ Perbandingan penawaran</h3><table class="cmp"><thead><tr><th style="width:110px">Aspek</th>'+
+  let h='<h3>'+T('⚖️ Perbandingan penawaran|⚖️ Quote comparison')+'</h3><table class="cmp"><thead><tr><th style="width:110px">'+T('Aspek|Aspect')+'</th>'+
     list.map(e=>'<th>'+esc(histLabel(e))+'<div class="mut mini">'+esc(e.label)+'</div></th>').join('')+'</tr></thead><tbody>';
   for(const r of rows)h+='<tr><td class="mut" style="font-size:12.5px">'+r[0]+'</td>'+
     list.map(e=>'<td'+(r[0]==='Grand total'&&e.tot===min?' class="win"':'')+'>'+r[1](e)+'</td>').join('')+'</tr>';
@@ -758,21 +783,25 @@ function bandingHtml(list){
 }
 function renderRiwayat(){
   const a=histLoad(),box=$('#histBox');
-  if(!a.length){box.innerHTML='<h2>🗂️ Riwayat penawaran</h2><div class="mut">Belum ada. Tekan tombol “💾 Simpan ke Riwayat” pada hasil RAB — konfigurasi & angkanya bisa dibuka ulang atau dibandingkan kapan pun (maks. 30 entri).</div>';return;}
+  if(!a.length){box.innerHTML='<h2>'+T('🗂️ Riwayat penawaran|🗂️ Quote history')+'</h2><div class="mut">'+T('Belum ada. Tekan tombol “💾 Simpan ke Riwayat” pada hasil RAB — konfigurasi & angkanya bisa dibuka ulang atau dibandingkan kapan pun (maks. 30 entri).|Empty so far. Press “Save to History” on the RAB result — the configuration & figures can be reopened or compared any time (max. 30 entries).')+'</div>';return;}
   const sel=a.filter(e=>bandSel.has(e.id));
-  let h='<h2>🗂️ Riwayat penawaran</h2>';
-  if(sel.length>=2)h+=bandingHtml(sel)+'<p class="mut mini">Angka hijau = grand total termurah di antara pilihan.</p>';
+  let h='<h2>'+T('🗂️ Riwayat penawaran|🗂️ Quote history')+'</h2>';
+  if(sel.length>=2)h+=bandingHtml(sel)+'<p class="mut mini">'+T('Angka hijau = grand total termurah di antara pilihan.|Green = the lowest grand total among the selected quotes.')+'</p>';
   h+=a.map(e=>'<div class="hist"><div class="nm"><b>'+esc(e.label)+'</b> <span class="tag mini">'+esc(histLabel(e))+'</span>'+
-    '<div class="mut mini">'+(e.wp?e.wp+' Wp · '+e.kwh+' kWh · ':'')+(e.wd?e.wd+' hari kerja · ':'')+'berat ±'+e.kg+' kg</div></div>'+
+    '<div class="mut mini">'+(e.wp?e.wp+' Wp · '+e.kwh+' kWh · ':'')+(e.wd?e.wd+T(' hari kerja · | working days · '):'')+T('berat ±|weight ±')+e.kg+' kg</div></div>'+
     '<b style="white-space:nowrap">'+fmt(e.tot)+'</b>'+
     '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto">'+
-    '<button class="btn ghost mini" onclick="muatRiwayat(\''+e.id+'\')">📂 Muat</button>'+
-    '<button class="btn ghost mini" onclick="toggleBanding(\''+e.id+'\')">'+(bandSel.has(e.id)?'✅ Dipilih':'⚖️ Bandingkan')+'</button>'+
+    '<button class="btn ghost mini" onclick="muatRiwayat(\'+e.id+\')">'+T('📂 Muat|📂 Load')+'</button>'+
+    '<button class="btn ghost mini" onclick="toggleBanding(\''+e.id+'\')">'+(bandSel.has(e.id)?T('✅ Dipilih|✅ Selected'):T('⚖️ Bandingkan|⚖️ Compare'))+'</button>'+
     '<button class="btn ghost mini" onclick="salinHist(\''+e.id+'\')">🔗</button>'+
-    '<button class="btn ghost mini" onclick="if(confirm(\'Hapus entri ini?\'))hapusRiwayat(\''+e.id+'\')">🗑️</button>'+
+    '<button class="btn ghost mini" onclick="if(confirm(\''+T('Hapus entri ini?|Delete this entry?')+'\'))hapusRiwayat(\''+e.id+'\')">🗑️</button>'+
     '</div></div>').join('');
   box.innerHTML=h;
 }
+
+/* ===== bahasa & dark mode ===== */
+const LANG=(location.search.match(/[?&]lang=(en|id)\b/)||[])[1]||(function(){try{return localStorage.getItem('rab.lang')||'id';}catch(e){return 'id';}})();
+function T(p){const i=p.indexOf('|');return LANG==='en'&&i>=0?p.slice(i+1):p.slice(0,i<0?p.length:i);}
 
 /* ===== WhatsApp admin ===== */
 const WA_PHONE='6285334398681';
@@ -784,8 +813,8 @@ function waText(){
   const nm=c=>A_MAP[c]?A_MAP[c].name:c;
   const jenis={campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck',plts:'PLTS'}[S.vehicleType]||'-';
   const akt=(
-    S.vehicleType==='plts'?[]:['Tipe: '+jenis,
-    S.packageCode?'Paket: '+nm(S.packageCode):'',
+    S.vehicleType==='plts'?[]:[T('Tipe: |Type: ')+jenis,
+    S.packageCode?T('Paket: |Package: ')+nm(S.packageCode):'',
     S.layoutCode?'Layout: '+nm(S.layoutCode):'',
     S.materialCode?'Material: '+nm(S.materialCode):'',
     S.addonCodes.length?'Add-on: '+S.addonCodes.map(nm).join(', '):'']
@@ -793,21 +822,32 @@ function waText(){
   if((S.includePlts||S.vehicleType==='plts')&&plts)akt.push(
     'PLTS: '+plts.pWp+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp), baterai '+
     plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh, inverter '+num(plts.inverter.specs,'watts')+' W, MPPT '+num(plts.scc.specs,'amps')+' A');
-  akt.push('Estimasi grand total: '+fmt(tot)+' (berlaku 30 hari)');
-  let msg='Halo EcoPower ID, saya baru memakai kalkulator RAB online.\n'+akt.join('\n');
-  try{const L=shareLink();if(L)msg+='\n\nLink konfigurasi (bisa dibuka & diedit lagi): '+L;}catch(e){}
-  msg+='\nMohon info harga final & jadwal produksinya. Terima kasih.';
+  akt.push(T('Estimasi grand total: |Estimated grand total: ')+fmt(tot)+T(' (berlaku 30 hari)| (valid for 30 days)'));
+  let msg=T('Halo EcoPower ID, saya baru memakai kalkulator RAB online.|Hi EcoPower ID, I just used your online RAB calculator.')+'\n'+akt.join('\n');
+  try{const L=shareLink();if(L)msg+='\n\n'+T('Link konfigurasi (bisa dibuka & diedit lagi): |Config link (open & edit it again here): ')+L;}catch(e){}
+  msg+='\n'+T('Mohon info harga final & jadwal produksinya. Terima kasih.|Please send the final pricing & production schedule. Thank you.');
   return msg;
 }
 function kirimWa(){
   const t=waText();
-  if(!t){alert('Susun dulu paket / add-on / kebutuhan listrik, lalu kirim.');return;}
+  if(!t){alert(T('Susun dulu paket / add-on / kebutuhan listrik, lalu kirim.|Build a package / add-on / power needs first, then send.'));return;}
   window.open('https://wa.me/'+WA_PHONE+'?text='+encodeURIComponent(t),'_blank','noopener,noreferrer');
 }
 
 renderApls('#apls'); renderApls('#apls2');
 S.sunIncome=Number(S.sunIncome)||4.5;
 bindManual(); renderAll(); renderCat(); updateEst(); renderRiwayat();
+(function(){try{
+  const dk=localStorage.getItem('rab.dark');
+  let dark=dk===null?!!(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches):dk==='1';
+  const ap=()=>document.body.classList.toggle('dark',!!dark);ap();
+  $('#darkBtn').onclick=()=>{dark=!dark;localStorage.setItem('rab.dark',dark?'1':'0');ap();};
+  $('#langBtn').textContent=(LANG==='id'?'EN':'ID');
+  $('#langBtn').onclick=()=>{try{localStorage.setItem('rab.lang',LANG==='id'?'en':'id');}catch(e){}
+    location.href=location.origin+location.pathname+'?lang='+(LANG==='id'?'en':'id');};
+  document.querySelectorAll('[data-tr]').forEach(el=>el.textContent=T(el.dataset.tr));
+  $('#catQ').placeholder=T('Cari nama / kode…|Search name / code…');
+}catch(e){}})();
 </script>
 </body>
 </html>

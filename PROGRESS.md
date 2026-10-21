@@ -1,6 +1,6 @@
 # PROGRESS — Kalkulator RAB GitHub Pages (referensi: nasbpfsby.duckdns.org:8444)
 
-**Status: live + riwayat & perbandingan penawaran. Terakhir: 2026-10-21 ~15:15 WIB**
+**Status: live + riwayat, perbandingan, dark mode & bahasa EN/ID. Terakhir: 2026-10-21 ~15:55 WIB**
 
 ## Target
 - Satu `index.html` GitHub Pages: kalkulator RAB campervan/motorhome/food-truck/PLTS.
@@ -95,3 +95,17 @@
 - Bug fix: (1) handler qty alat tidak menyimpan state; (2) fallback sizing baterai men-undersize
   (4×300Ah untuk kebutuhan 1.667Ah) → sekarang fallback qty unlimited seperti referensi.
 - [ ] Final `PROGRESS.md`.
+
+## Iterasi 5 — Dark mode + Bahasa EN/ID (Okt 21, ~15:50 WIB)
+- **Mode gelap**: tombol 🌙 di header; warna via `body.dark` (bg #0c1420, kartu #122031, input/nama tabel/catatan/warning/SOW/toast), disimpan `localStorage rab.dark`,
+  default mengikuti `prefers-color-scheme`; cetak dipaksa terang (`@media print body.dark` reset).
+- **Bahasa ID/EN**: tombol `EN`/`ID` di header; `?lang=en|id` URL param (boleh digabung `?cfg=`) → `localStorage rab.lang` → default `id`.
+  - Renderer: helper `T('ID|EN')` inline di semua label dinamis (nav, kartu langkah, daftar kendaraan, RAB + penjabaran vendor, header grup STRUKTUR→Structure dst.,
+    cek kelayakan, SOW penuh (scope/komitmen/hak-kewajiban/di-luar-lingkup/durasi), catatan optimasi, hasil PLTS, CSV, riwayat + perbandingan,
+    toasts/alerts/prompt, pesan & greeting WhatsApp "Type: / Package: / Send the final pricing…").
+  - HTML statis: `data-tr="ID|EN"` + loop boot; placeholder pencarian katalog diterjemahkan.
+- **Uji jsdom (t9/t10/t11) 8/8 ✓**: nav/h2/grup/udi kendaraan/updateEst EN; badge kelayakan EN;
+  SOW h4 EN penuh; riwayat EN tersimpan; WA EN `Type:` ✓; dark on/off ✓; 0 error jsdom.
+  Sweep leftovers EN: hanya nama katalog Indonesia (sengaja — nama barang vendor).
+- Catatan teknis: bug kuot ala `('|` diperbaiki global; helper T sendiri `indexOf('|')` dipulihkan manual.
+- Ukuran: build.py 64,6 KB → index.html ~75 KB.
