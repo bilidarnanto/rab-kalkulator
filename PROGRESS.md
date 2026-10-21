@@ -1,6 +1,6 @@
 # PROGRESS — Kalkulator RAB GitHub Pages (referensi: nasbpfsby.duckdns.org:8444)
 
-**Status: SELESAI (aplikasi + riset yang memungkinkan). Terakhir: 2026-10-21 ~15:35 WIB**
+**Status: live + WhatsApp admin + SEO. Terakhir: 2026-10-21 ~16:25 WIB**
 
 ## Target
 - Satu `index.html` GitHub Pages: kalkulator RAB campervan/motorhome/food-truck/PLTS.
@@ -45,6 +45,14 @@
 - URL: https://bilidarnanto.github.io/rab-kalkulator/
 - Catatan: skrip putaran perbaikan riset menuliskan ulang 18 bukti HTML antrian (all captcha 73,9 KB)
   seluruh temuan harga sudah direkam teks di `RESEARCH.md §C/§B`; bukti panel/baterai/kulkas utuh.
+
+## Iterasi 2 (timbal balik user, ~16:20 WIB)
+- Tombol "Kirim estimasi ke Admin (WhatsApp)" — no. 6285334398681, isi pesan: tipe/paket/
+  layout/material/add-on, speck PLTS, estimasi grand total; tinggal tekan kirim di WhatsApp.
+- SEO untuk Google: meta robots/canonical/OG/Twitter, favicon SVG, JSON-LD WebApplication,
+  robots.txt + sitemap.xml (di-produce oleh build.py), sitemap ping ke Google.
+- Sitemap ping g:api.google.com? = status diproses; pengindeksan organik saat ini terjadi
+  beberapa hari (GitHub Pages telah di-crawl robot Google karena domain tsb aktif).
 
 ## Keputusan akhir harga
 - Aplikasi memakai **harga katalog vendor asli** untuk semua 79 komponen (real seller, Aug 2026).
