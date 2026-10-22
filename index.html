@@ -341,11 +341,21 @@ function calculatePlts(inp, optim){
   add(bat.comp,num(spec(bat.comp),'ah')+' Ah / '+V+' V',null,bat.qty);
   add(inverter,num(spec(inverter),'watts')+' W pure sine',null,1);
   add(scc,'MPPT '+num(spec(scc),'amps')+' A',null,1);
-  add(A_MAP['PLTS-BOS-DC'],'kabel DC 6 mm² — 3/baris panel + 2/unit baterai',null,3*pQty+2*bat.qty);
+  add(A_MAP['PLTS-BOS-DC'],'kabel DC 6 mm² (sisi charge) — 3/baris panel + 2/unit baterai; kabel inverter disesuaikan arus & panjang saat instalasi (drop <3%)',null,3*pQty+2*bat.qty);
   add(A_MAP['PLTS-BOS-AC'],'NYM 2,5 mm² panel instalasi AC',null,10);
   add(A_MAP['PLTS-BOS-MC4'],'konektor',null,pQty+2);
-  for(const k of ['PLTS-BOS-FUSE','PLTS-BOS-DCBRK','PLTS-BOS-ACBRK','PLTS-BOS-BUSBAR','PLTS-BOS-GND','PLTS-BOS-MOUNT','PLTS-BOS-JBOX']){
-    const c=A_MAP[k]; if(c) lines.push({...c,spec:'',qty:1,subtotal:Math.round(c.price)});
+  { /* proteksi sesuai standar: fuse string bila >2 string paralel (NEC 690), fuse utama baterai dekat baterai */
+    const sf=Math.max(0,pQty-2);
+    for(const k of ['PLTS-BOS-FUSE','PLTS-BOS-DCBRK','PLTS-BOS-ACBRK','PLTS-BOS-BUSBAR','PLTS-BOS-GND','PLTS-BOS-MOUNT','PLTS-BOS-JBOX']){
+      const c=A_MAP[k]; if(!c)continue;
+      let sp='',q=1;
+      if(k==='PLTS-BOS-FUSE'){q=1+sf;
+        sp=(sf>0?sf+'× fuse string PV (paralel >2 string) + ':'')+'fuse utama baterai — ≤0,5 m dari baterai, rating ≥1,25× arus inverter (dipasang petugas)';}
+      if(k==='PLTS-BOS-DCBRK')sp='breaker DC sisi panel (proteksi input MPPT)';
+      if(k==='PLTS-BOS-ACBRK')sp='breaker AC keluaran inverter';
+      if(k==='PLTS-BOS-GND')sp='grounding bodi kendaraan & sistem DC (negatif ter-grounding satu titik)';
+      lines.push({...c,spec:sp,qty:q,subtotal:Math.round(q*c.price)});
+    }
   }
   add(A_MAP['PLTS-JASA-INSTALL'],pWp+' Wp × '+fmt(PLTS.jasaPerWp)+'/Wp',null,pWp);
   const bAh=num(spec(bat.comp),'ah'), batWh=bat.qty*bAh*V;
@@ -368,7 +378,10 @@ function complexityOf(s){
 
 function buildRabLines(s){
   const lines=[]; let i=0;
-  const push=(code,group,q=1)=>{const c=A_MAP[code];if(!c)return;i++;lines.push({...c,group,qty:q,subtotal:Math.round(q*c.price)});};
+  const push=(code,group,q=1)=>{const c=A_MAP[code];if(!c)return;
+    const ex=lines.find(x=>x.code===code&&x.group===group&&x.group!=='JASA');
+    if(ex){ex.qty+=q;ex.subtotal=Math.round(ex.qty*ex.price);return;}   /* anti-duplikasi: add-on langkah-2 + chip langkah-3 digabung, qty dijumlah */
+    i++;lines.push({...c,group,qty:q,subtotal:Math.round(q*c.price)});};
   if(s.vehicleType!=='plts'){
     if(s.packageCode)push(s.packageCode,'STRUKTUR');
     if(s.layoutCode)push(s.layoutCode,'INTERIOR');
@@ -433,6 +446,8 @@ function optimNotes(plts){
     n.push(T('Sizing hemat aktif: |Cost-optimized sizing: ')+plts.pQty+'× '+num(spec(plts.panel.comp),'wp')+' Wp ('+fmt(plts.panel.comp.price)+T('/unit) — lihat catatan Rp/Wp di atas.|/unit) — see the Rp/Wp check above.'));
   if(plts.bQty>=4)
     n.push(T('Baterai |Battery ')+plts.bQty+T(' unit (| unit (')+((plts.batWh/1000).toFixed(1))+T(' kWh) — untuk aplikasi kendaraan pertimbangkan tegangan sistem lebih tinggi (24/48 V) atau kurangi konsumsi listrik malam hari.| kWh) — for vehicles consider a higher system voltage (24/48 V) or cut night-time loads.'));
+  if(plts.inverter&&num(spec(plts.inverter),'watts')>=2000)
+    n.push(T('⚠️ Keselamatan: inverter ≥2000 W pada sistem 12 V menarik arus baterai >170 A — untuk sistem ukuran ini pertimbangkan tegangan 24 V (kabel & fuse lebih kecil, efisiensi naik); konfigurasi 24 V ditawarkan admin.|⚠️ Safety: a ≥2000 W inverter on 12 V draws >170 A from the battery — for this size consider a 24 V system (smaller cables & fuses, better efficiency); the admin can quote a 24 V configuration.'));
   if(plts.inverter&&num(spec(plts.inverter),'watts')>2.2*plts.peakW)
     n.push(T('Inverter melebihi 2× beban puncak — elemen beban bisa dilakukan bertahap (stagger) agar inverter lebih kecil.|The inverter exceeds 2× the peak load — staggering loads in stages lets you use a smaller inverter.'));
   if(plts.scc&&num(spec(plts.scc),'amps')<=30)
@@ -626,6 +641,10 @@ function rabHtml(){
   }
   h+='</tbody></table>';
   const pend=lines.filter(L=>L.pending);
+  const dups=(DATA.appliances||[]).filter(a=>{const st=S.appliances&&S.appliances[a.code];
+    if(!st||!st.buy)return false;const bc=buyAdCode(a.code,vehicleT(S.vehicleType));
+    return bc&&(S.addonCodes||[]).includes(bc);});
+  if(dups.length)h+='<p class="mut mini">'+T('⚠️ '+dups.map(a=>tn(a)).join(', ')+': tercentang di add-on (langkah 2) DAN checklist 🛒 (langkah 3) — otomatis digabung jadi satu baris, jumlah unit dijumlah (tidak ditagih dua kali).|⚠️ '+dups.map(a=>tn(a)).join(', ')+': ticked both as add-on (step 2) and checklist 🛒 (step 3) — merged into one line with combined quantity (never billed twice).')+'</p>';
   if(pend.length)h+='<p class="mut mini">'+T('⚠️ '+pend.length+' peralatan dicentang belum punya harga katalog (blender, microwave, dsb.) — TIDAK ikut menghitung total. Admin EcoPower menetapkan harganya saat pemesanan (belanja manual).|⚠️ '+pend.length+' ticked appliances have no catalog price yet (blender, microwave, etc.) — NOT counted in the total. The EcoPower admin sets the price at order time (manual purchase).')+'</p>';
   const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
   if(adv){
@@ -658,7 +677,7 @@ function rabHtml(){
     const kgn=lines.reduce((a,L)=>a+(L.weightKg||0)*L.qty,0);
     if(kgn)h+='<div class="mut" style="margin:6px 0">'+T('Berat komponen (alat+material): ±|Component weight (tools+materials): ±')+fmt0(kgn)+T(' kg — belum termasuk bobot dasar kendaraan.| kg — excluding the base vehicle weight.')+'</div>';
   }
-  h+='<h3>'+T('Lingkup pekerjaan & kesepakatan (SOW)|Scope of work & agreement (SOW)')+'</h3>'+sowHtml(S,lines,adv,plts);
+  h+='<h3>'+T('Lingkup pekerjaan & kesepakatan (SOW)|Scope of work & agreement (SOW)')+'</h3>'+sowHtml(S,lines,adv,plts)+safetyHtml();
   h+='<p class="mut">Estimasi berlaku 30 hari; harga final diverifikasi admin sebelum penawaran resmi.</p>'+
      '<button class="btn no-print" onclick="kirimWa()">'+T('📱 Kirim estimasi ke Admin (WhatsApp)|📱 Send estimate to Admin (WhatsApp)')+'</button> '+
      '<button class="btn ghost no-print" onclick="copyCfg()">'+T('🔗 Salin link konfigurasi|🔗 Copy configuration link')+'</button> '+
@@ -704,6 +723,16 @@ function renderCat(){
   $('#catQ').oninput=draw; box.onchange=draw; draw();
 }
 
+function safetyHtml(){
+  const it=[
+   T('Fuse utama baterai ≤0,5 m dari baterai, rating ≥1,25× arus inverter; fuse string PLTS wajib bila >2 string paralel.|Main battery fuse ≤0,5 m from the battery, rated ≥1.25× inverter current; PV string fuses are mandatory when >2 parallel strings.'),
+   T('MCB/fuse per sirkuit 12 V pada panel distribusi (penerangan, pompa, port USB, dsb).|One MCB/fuse per 12 V circuit on the distribution board (lighting, pump, USB etc).'),
+   T('Kabel mengikuti arus & panjang (drop tegangan <3%); kabel inverter disesuaikan — ≥2000 W disarankan sistem 24 V.|Cables sized to current and length (voltage drop <3%); inverter cables upgraded as needed — ≥2000 W motors a 24 V system.'),
+   T('Locker gas: ventilasi atas & bawah + drain hole, regulator & selang ber-SNI; APAR 2 kg dan detektor CO/asap dipasang bersamaan (harga konfirmasi admin).|Gas locker: top & bottom vents plus drain hole, SNI regulator & hose; a 2 kg fire extinguisher and CO/smoke detectors are fitted too (price confirmed by the admin).'),
+   T('Terminal & konektor MC4 rusuk/torque benar, terlindung dari gesekan; bodi kendaraan di-grounding satu titik untuk sistem DC.|Terminals & MC4 connectors correctly crimped/torqued, protected from chafing; vehicle body grounded at one point for the DC system.'),
+   T('Peralatan listrik dipasang teknisi berpengalaman; komponen yang dipakai dari katalog ber-SNI/kualitas industri.|Electrical work is done by experienced technicians; components come from the SNI/industrial-grade catalog.')];
+  return '<details class="src"><summary>⚠️ '+T('Keselamatan & standar pemasangan (dipasang bengkel)|Safety & installation standards (workshop practice)')+'</summary><ul>'+it.map(x=>'<li>'+x+'</li>').join('')+'</ul></details>';
+}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
   document.body.dataset.tab=b.dataset.tab;
@@ -729,7 +758,7 @@ $('#btnPlts').onclick=()=>{
   if(kgn)h+='<div class="mut" style="margin:8px 0">'+T('Berat total komponen: ±|Total component weight: ±')+fmt0(kgn)+T(' kg (panel+baterai+BOS, belum termasuk rak/mounting tambahan).| kg (panels+battery+BOS, excluding extra mounting racks).')+'</div>';
   const n=optimNotes(plts);
   if(n.length)h+='<h3>Catatan optimasi komponen</h3><div class="note">'+n.map(x=>'• '+esc(x)).join('<br>')+'</div>';
-  h+='<h3>'+T('Lingkup pekerjaan & kesepakatan (SOW)|Scope of work & agreement (SOW)')+'</h3>'+sowHtml({vehicleType:'plts'},plts.lines,null,plts);
+  h+='<h3>'+T('Lingkup pekerjaan & kesepakatan (SOW)|Scope of work & agreement (SOW)')+'</h3>'+sowHtml({vehicleType:'plts'},plts.lines,null,plts)+safetyHtml();
   h+='<p class="mut"><button class="btn no-print" onclick="kirimWa()">'+T('📱 Kirim ke Admin (WhatsApp)|📱 Send to Admin (WhatsApp)')+'</button> '+
      '<button class="btn ghost no-print" onclick="copyCfg()">'+T('🔗 Salin link konfigurasi|🔗 Copy configuration link')+'</button> '+
      '<button class="btn ghost no-print" onclick="unduhCsv()">'+T('⬇️ Unduh CSV|⬇️ Download CSV')+'</button> '+
@@ -967,7 +996,8 @@ function waText(){
     S.materialCode?'Material: '+nm(S.materialCode):'',
     S.addonCodes.length?'Add-on: '+S.addonCodes.map(nm).join(', '):'']
   );
-  const buys=(DATA.appliances||[]).filter(a=>{const st=S.appliances[a.code];return st&&st.buy;});
+  const buys=(DATA.appliances||[]).filter(a=>{const st=S.appliances[a.code];if(!st||!st.buy)return false;
+    const bc=buyAdCode(a.code,vehicleT(S.vehicleType));return !(bc&&(S.addonCodes||[]).includes(bc));});
   if(buys.length)akt.push(T('Belanja peralatan: |Equipment purchase: ')+buys.map(a=>{const st=S.appliances[a.code];
     const bcode=buyAdCode(a.code,vehicleT(S.vehicleType));
     const q=Math.max(1,st.qty||1);

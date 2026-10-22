@@ -192,3 +192,22 @@
 - Tooltip chip tanpa padanan: "harga menyusul, ditetapkan admin EcoPower saat pemesanan".
 - Uji t22/t22b ✓ (19/19 chip, baris Blender & Rice Cooker menyusul, grand total tak berubah, footnote, title chip);
   regresi t9/t17/t18/t19/t20/t21 hijau.
+
+## Iterasi 13 — Audit engineering (campervan + PV): anti-duplikasi & standar keselamatan (Okt 22, ~14:10 WIB)
+Menindaklanjuti permintaan audit sebagai campervan designer/engineer & PV engineer:
+- **Anti-duplikasi RAB**: `push()` kini menggabungkan baris kode katalog yang sama (add-on langkah-2 + chip 🛒
+  langkah-3 = satu baris, qty dijumlah, tidak ditagih dua kali) + peringatan otomatis di hasil bila kombinasi itu
+  terdeteksi; WhatsApp tidak lagi memuat belanja yang sudah ada di add-on.
+- **Proteksi PV sesuai standar** (BOS PLTS): fuse dinamis = `1 + max(0, stringPV−2)` (NEC 690: fuse string wajib
+  bila >2 string paralel); fuse utama baterai ≤0,5 m dari baterai, rating ≥1,25× arus inverter; breaker DC input
+  MPPT & breaker AC keluaran inverter diberi keterangan fungsi; grounding bodi satu titik; kabel DC charge di-
+  keterangan "kabel inverter disesuaikan arus & panjang (drop <3%)".
+- **Peringatan 24 V**: inverter ≥2000 W pada sistem 12 V → menarik arus baterai >170 A; catatan keselamatan +
+  saran konfigurasi 24 V muncul otomatis di hasil (dan tidak muncul bila beban puncak kecil).
+- **Kotak "⚠️ Keselamatan & standar pemasangan"** (details, ID/EN) di bawah SOW (hasil campervan & PLTS-only):
+  fuse/breaker per sirkuit, drop tegangan <3%, ventilasi locker gas + drain hole ber-SNI, APAR 2 kg + detektor
+  CO/asap (harga konfirmasi admin), torque/MC4, SNI-katalog komponen.
+- Hasil audit formula sizing tetap sesuai praktek: derating 0,75 (≈NEC 690 80%), sun 4,5 h (band Indonesia),
+  DoD 0,8 LiFePO4, inverter & MPPT ×1,25 — tidak diubah.
+- Uji t23/t23b ✓ (merge 1+3→qty4 Rp18jt, peringatan digabung, safety box ID/EN, fuse 1×string+utama utk 4 panel,
+  tip 24V muncul per beban besar); regresi t9/t17/t18/t19/t20/t21/t22 semuanya exit 0.
