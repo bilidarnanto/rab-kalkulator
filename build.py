@@ -182,6 +182,11 @@ body.dark .card,body.dark th,body.dark .gw{background:#fff!important;color:#1e29
 .sb.ok{border-color:var(--acc);color:var(--bch);background:#eef7ef}
 .sb .pop{opacity:.55;font-size:11.5px}
 .gob{margin-top:10px}
+.buychk{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--bch);border:1px solid var(--acc);border-radius:6px;padding:2px 7px;cursor:pointer;white-space:nowrap;user-select:none}
+.buychk input{width:auto;margin:0;cursor:pointer}
+.buychk:has(input:checked){background:var(--bch);color:#fff}
+body.dark .buychk{color:#8fdca3;border-color:var(--acc)}
+body.dark .buychk:has(input:checked){color:#fff}
 .src{border:1px dashed var(--line);border-radius:9px;padding:8px 12px;margin:10px 0;background:#fff;font-size:13px}
 .src summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--bch)}
 .src ul{margin:6px 0 2px 18px;padding:0}
@@ -320,6 +325,21 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
 const DATA = __DATA__;
 const C = DATA.components, CFG = DATA.cfg, PLTS = CFG.plts;
 const A_MAP = Object.fromEntries(C.map(c=>[c.code,c]));
+/* memetakan alat langkah-3 (beli?) -> komponen katalog yang dijual per tipe kendaraan */
+const APL_BUY={
+  'APL-TV':{CV:'CV-AD-TV',MH:'MH-AD-TV'},
+  'APL-FRIDGE':{CV:'CV-AD-FRIDGE',MH:'MH-AD-FRIDGE',FT:'FT-AD-REFRIG'},
+  'APL-PUMP':{CV:'CV-AD-PUMP',FT:'FT-AD-WATER'},
+  'APL-AC':{CV:'CV-AD-AC',MH:'MH-AD-AC'},
+  'APL-WATERHEATER':{CV:'CV-AD-WATERHEATER',MH:'MH-AD-WATERHEATER'},
+  'APL-FREEZER':{FT:'FT-AD-FREEZER'},
+  'APL-FRYER':{FT:'FT-AD-FRYER'},
+  'APL-GRILL':{FT:'FT-AD-GRILL'},
+  'APL-COFFEE':{FT:'FT-AD-COFFEE'},
+  'APL-REFRIGDISPLAY':{FT:'FT-AD-REFRIG'},
+  'APL-EXHAUST':{FT:'FT-AD-HOOD'}
+};
+function buyAdCode(apl,vt){const o=APL_BUY[apl]; if(!o)return null; return o[vt]||o.CV||Object.values(o)[0]||null;}
 const catBy = cat => C.filter(c=>c.category===cat);
 const fmt = n => 'Rp' + Math.round(n).toLocaleString('id-ID');
 const num = (o,k)=>{const v=o?.[k];return 'number'===typeof v?v:Number(v??0)||0;};
@@ -420,6 +440,8 @@ function buildRabLines(s){
     if(s.layoutCode)push(s.layoutCode,'INTERIOR');
     if(s.materialCode)push(s.materialCode,'INTERIOR');
     for(const a of s.addonCodes)push(a,GRP[A_MAP[a]?.category]??'PERALATAN');
+    for(const a of DATA.appliances||[]){const st=s.appliances&&s.appliances[a.code];
+      if(st&&st.buy){const code=buyAdCode(a.code,vehicleT(s.vehicleType));if(code&&A_MAP[code])push(code,'PERALATAN',Math.max(1,st.qty||1));}}
   }
   const e=energyOf(s); let plts=null;
   if((s.includePlts&&s.vehicleType!=='plts')||s.vehicleType==='plts'){
@@ -496,7 +518,7 @@ try{const mc=location.search.match(/[?&]cfg=([^&]+)/);if(mc){const cf=decodeCfg(
   for(const k in S.appliances){const v=S.appliances[k];
     if(typeof v==='number')S.appliances[k]={qty:Math.max(0,v||0),hours:hrs[k]||1};
     else if(v&&typeof v==='object')S.appliances[k]={qty:(typeof v.qty==='number'?Math.max(0,v.qty):Math.max(0,Number(v.qty)||0)),
-      hours:(typeof v.hours==='number'&&v.hours>0)?v.hours:(hrs[k]||1)};
+      hours:(typeof v.hours==='number'&&v.hours>0)?v.hours:(hrs[k]||1),buy:!!v.buy};
   }
 }catch(e){}})();
 const save=()=>{try{localStorage.setItem('rab.state',JSON.stringify(S));}catch(e){}};
@@ -506,6 +528,7 @@ const VEH=[{id:'campervan',nm:'🚐 Campervan',d:'van konversi 1–4 orang|1–4
   {id:'foodtruck',nm:'🍔 Food Truck',d:'dapur di atas roda|kitchen on wheels'},
   {id:'plts',nm:'☀️ PLTS (rumah/lainnya)|☀️ Solar system (home/other)',d:'tanpa paket kendaraan|no vehicle package'}];
 const suf=v=>({campervan:'CV',motorhome:'MH',foodtruck:'FT'}[v]||'');
+const vehicleT=v=>({campervan:'CV',motorhome:'MH',foodtruck:'FT'}[v]||'CV');
 
 function renderVeh(){
   const L=$('#vehList'); L.innerHTML='';
@@ -571,16 +594,28 @@ function renderApls(id){
   box.innerHTML='';
   for(const a of DATA.appliances){
     const st=S.appliances[a.code];
+    const bcode=S.vehicleType==='plts'?buyAdCode(a.code,'CV'):buyAdCode(a.code,suf(S.vehicleType));
+    const buyChip=bcode?'<label class="buychk" title="'+(A_MAP[bcode]?T('🛒 belanja item ini: |🛒 purchase this item: ')+fmt(A_MAP[bcode].price)+' / '+esc(A_MAP[bcode].unit)+' (+'+(a.watts)+' W)':'')+'">'+
+      '<input type="checkbox" data-buy="'+a.code+'" '+(st&&st.buy?'checked':'')+'>'+T('🛒 ke RAB|🛒 to RAB')+'</label>':'';
     box.insertAdjacentHTML('beforeend',
-      '<div class="apl"><span class="nm">'+esc(tn(a))+'</span><span class="w">'+a.watts+' W</span>'+
+      '<div class="apl"><span class="nm">'+esc(tn(a))+buyChip+'</span><span class="w">'+a.watts+' W</span>'+
       '<input type="number" min="0" value="'+(st&&st.qty>0?st.qty:0)+'" data-q="'+a.code+'" title="unit">'+
       '<span class="w">unit ×</span>'+
       '<input type="number" min="0" step="0.5" value="'+(st&&st.hours>0?st.hours:a.hours)+'" data-h="'+a.code+'" title="'+T('jam/hari|hours/day')+'">'+
       '<span class="w">'+T('jam|hrs')+'</span></div>');
   }
-  box.oninput=e=>{
-    if(!e.target.matches('input'))return;
-    const t=e.target, q=t.dataset.q, h=t.dataset.h;
+  const pick=e=>{
+    if(!e.target.matches||!e.target.matches('input'))return;
+    const t=e.target;
+    if(t.dataset.buy){
+      const code=t.dataset.buy;
+      const a0=DATA.appliances.find(x=>x.code===code);
+      const cur=S.appliances[code];const o=S.appliances[code]=(cur&&typeof cur==='object')?cur:{qty:0,hours:a0?a0.hours:0};
+      o.buy=t.checked; save(); updateEst();
+      if(id==='#apls') update();
+      return;
+    }
+    const q=t.dataset.q, h=t.dataset.h;
     const code=q||h; if(!code)return;
     const a=DATA.appliances.find(x=>x.code===code);
     const cur=S.appliances[code];const o=S.appliances[code]=(cur&&typeof cur==='object')?cur:{qty:0,hours:a.hours};
@@ -589,7 +624,7 @@ function renderApls(id){
     save(); updateEst();
     if(id==='#apls') update();
   };
-  box.onchange=e=>update();
+  box.oninput=pick; box.onchange=pick;
 }
 
 function resetLoads(){
@@ -635,7 +670,7 @@ function rabHtml(){
     '<li>'+T('Faktor kompleksitas 0,80–1,30 (level custom layout/finishing).|Complexity factor 0.80–1.30 (custom layout/finish level).')+'</li>'+
     '<li>'+T('Diskon volume 3%/2%/1% bila subtotal grup besar; kontingensi 3–10% (besaran disepakati admin sebelum final).|Volume discount 3%/2%/1% on large group subtotals; contingency 3–10% (agreed with the admin before final).')+'</li>'+
     '<li>'+T('PPN 11%; margin bengkel sistem PLTS 15% (mencakup perakitan, pengujian, dan garansi pengerjaan).|VAT 11%; solar-system workshop margin 15% (assembly, testing and workmanship warranty).')+'</li>'+
-    '<li>'+T('Daftar alat (langkah 3) bukan biaya: hanya menentukan sizing PLTS. Belanja peralatan (dibayar per unit) dicentang di langkah 2.|The appliance list (step 3) is not a cost: it only sizes the solar system. Equipment purchases (paid per unit) are ticked in step 2.')+'</li>'+
+    '<li>'+T('Cara belanja peralatan: centang 🛒 pada baris alat (langkah 3) — diperhitungkan sebagai item PERALATAN dengan harga katalog per unit × jumlah; atau centang add-on di langkah 2.|To purchase equipment: tick 🛒 on the appliance row (step 3) — it is billed as an EQUIPMENT line at catalog price × units; or tick add-ons in step 2.')+'</li>'+
     '<li>'+T('Estimasi berlaku 30 hari — angka final dikonfirmasi admin EcoPower.|Estimates valid 30 days — final figures are confirmed by the EcoPower admin.')+'</li></ul></details>';
   const groups={};
   for(const L of lines)(groups[L.group]=groups[L.group]||[]).push(L);

@@ -165,3 +165,17 @@
   / PLTS-aktif ("angka ini MENENTUKAN komponen grup PLTS pada hasil").
 - Butir baru di kotak asumsi (total 8); catatan sizing ditambah tepat di bawah header "Sistem PLTS terpilih" pada hasil RAB.
 - Uji t20 ✓ 5 skenario (off/on/note EN/butir asumsi); t9 tetap hijau.
+
+## Iterasi 11 — Checklist belanja perlengkapan listrik langsung ke RAB (request admin, Okt 22, ~12:30 WIB)
+- **Chip "🛒 ke RAB"** pada tiap baris alat di langkah 3 (checkbox) — hanya muncul bila ada padanan katalog add-on
+  (11 dari 19 alat: TV, kulkas, pompa, AC, water-heater, freezer/fryer/grill/mesin kopi/kulkas display/exhaust hood).
+  Chip tanpa padanan (blender, rice cooker, laptop…) tidak ditampilkan agar tidak menjanjikan barang yang tak dijual.
+- **Peta `APL_BUY`** per tipe kendaraan dengan fallback CV (mis. kulkas: CV-AD-FRIDGE / MH-AD-FRIDGE / FT-AD-REFRIG);
+  tooltip chip menampilkan harga katalog + satuan + dampak W (+30 W kulkas, dst.).
+- Alat dicentang → masuk **grup PERALATAN** di RAB: nama & harga katalog vendor, **qty mengikuti kolom unit**
+  (2× Kulkas = 2 unit Rp9.000.000), waste 3% & diskon volume otomatis, tanggal harga via tooltip uph.
+- Flag `buy` disimpan di state (ikut WA-link cfg, riwayat, CSV) — dibackup boot normalizer (jangan dibuang lagi).
+- Reset beban (🔄) menghapus belanjaan alat sekaligus; harga tetap mengikuti verifikasi katalog Aug 2026.
+- Bugfix saat applikasi: (1) kunci objek `APL-TV` dsb. mengandung strip → wajib dikutip `'APL-TV'` di JS;
+  (2) handler `pick` mengembalikan lebih awal sebelum cabang buy; (3) normalizer state lama membuang `buy`.
+- Uji t21/t21b ✓ (chip muncul selektif, row RAB qty 2, reset bersih, FT mapping, EN "to RAB"); t9/t12/t17/t18/t19/t20 hijau.
