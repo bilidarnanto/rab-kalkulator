@@ -262,6 +262,7 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
         <div><label data-tr="Peak sun hour harian (1–7)|Daily peak sun hours (1–7)">Peak sun hour harian (1–7)</label><input id="sun" type="number" step="0.1" min="1" max="7" value="4.5"></div>
       </div>
       <div class="note" id="espEst"></div>
+      <div style="margin-top:8px" class="no-print"><button class="btn ghost mini" onclick="resetLoads()" data-tr="🔄 Reset beban & input manual|🔄 Reset loads & manual inputs">🔄 Reset beban & input manual</button></div>
     </section>
   </div>
   <section class="card sticky" id="rabOut"></section>
@@ -277,7 +278,10 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
       <div><label data-tr="Beban puncak manual (W)|Manual peak load (W)">Beban puncak manual (W)</label><input id="mPeak2" type="number" min="0" placeholder="otomatis"></div>
       <div><label data-tr="Peak sun hour harian (1–7)|Daily peak sun hours (1–7)">Peak sun hour harian (1–7)</label><input id="sun2" type="number" step="0.1" min="1" max="7" value="4.5"></div>
     </div>
-    <button class="btn" id="btnPlts" style="margin-top:12px" data-tr="Hitung & susun RAB PLTS|Calculate & build solar RAB">Hitung & susun RAB PLTS</button>
+    <div style="display:flex;gap:8px;margin-top:12px" class="no-print">
+      <button class="btn" id="btnPlts" data-tr="Hitung & susun RAB PLTS|Calculate & build solar RAB">Hitung & susun RAB PLTS</button>
+      <button class="btn ghost mini" onclick="resetLoads()" data-tr="🔄 Reset|🔄 Reset">🔄 Reset</button>
+    </div>
   </section>
   <section class="card" id="pltsOut"><div class="mut" data-tr="Isi jumlah unit & jam pemakaian, lalu tekan hitung.|Fill in units & hours of use, then hit calculate.">Isi jumlah unit & jam pemakaian, lalu tekan hitung.</div></section>
 </div>
@@ -310,7 +314,8 @@ function energyOf(s){
   let wh=0, W=0;
   for(const a of DATA.appliances){
     const st=s.appliances?.[a.code]||null;
-    const q=st?Math.max(0,st.qty||0):0, h=st&&st.hours>0?st.hours:a.hours;
+    const q=typeof st==='number'?Math.max(0,st):(st?Math.max(0,st.qty||0):0);
+    const h=st&&typeof st==='object'&&st.hours>0?st.hours:a.hours;
     if(q>0&&h>0){ wh+=a.watts*h*q; W+=a.watts*q; }
   }
   const dailyWh = s.manualDailyWh>0?Math.round(s.manualDailyWh):Math.round(wh);
@@ -465,6 +470,15 @@ let S={vehicleType:'campervan',packageCode:'CV-PKG-STD',layoutCode:'',materialCo
   includePlts:false,optSizing:true,appliances:{},manualDailyWh:null,manualPeakW:null,sunIncome:4.5};
 try{Object.assign(S,JSON.parse(localStorage.getItem('rab.state')||'{}'));}catch(e){}
 try{const mc=location.search.match(/[?&]cfg=([^&]+)/);if(mc){const cf=decodeCfg(mc[1]);if(cf)Object.assign(S,cf);}}catch(e){}
+(function(){try{ // normalisasi state versi lama: appliances lama berformat angka / objek tak lengkap
+  if(!S.appliances||typeof S.appliances!=='object')S.appliances={};
+  const hrs={};(DATA.appliances||[]).forEach(a=>hrs[a.code]=a.hours);
+  for(const k in S.appliances){const v=S.appliances[k];
+    if(typeof v==='number')S.appliances[k]={qty:Math.max(0,v||0),hours:hrs[k]||1};
+    else if(v&&typeof v==='object')S.appliances[k]={qty:(typeof v.qty==='number'?Math.max(0,v.qty):Math.max(0,Number(v.qty)||0)),
+      hours:(typeof v.hours==='number'&&v.hours>0)?v.hours:(hrs[k]||1)};
+  }
+}catch(e){}})();
 const save=()=>{try{localStorage.setItem('rab.state',JSON.stringify(S));}catch(e){}};
 
 const VEH=[{id:'campervan',nm:'🚐 Campervan',d:'van konversi 1–4 orang|1–4 seater van conversion'},
@@ -549,13 +563,20 @@ function renderApls(id){
     const t=e.target, q=t.dataset.q, h=t.dataset.h;
     const code=q||h; if(!code)return;
     const a=DATA.appliances.find(x=>x.code===code);
-    const o=S.appliances[code]=S.appliances[code]||{qty:0,hours:a.hours};
+    const cur=S.appliances[code];const o=S.appliances[code]=(cur&&typeof cur==='object')?cur:{qty:0,hours:a.hours};
     const v=Math.max(0,Number(t.value)||0);
     if(q)o.qty=v; else o.hours=v;
     save(); updateEst();
     if(id==='#apls') update();
   };
   box.onchange=e=>update();
+}
+
+function resetLoads(){
+  S.appliances={};S.manualDailyWh=null;S.manualPeakW=null;S.sunIncome=4.5;save();
+  renderApls('#apls');renderApls('#apls2');bindManual();
+  ['#sun','#sun2'].forEach(sel=>{const el=$(sel);if(el)el.value='4.5';});
+  updateEst();update();toast(T('Beban listrik direset ke awal.|Power loads reset to defaults.'));
 }
 
 function bindManual(){
@@ -690,7 +711,7 @@ let toastT=null;
 function toast(msg){
   const t=document.createElement('div');t.className='toast';t.textContent=msg;
   document.body.appendChild(t);
-  requestAnimationFrame(()=>t.classList.add('show'));
+  (window.requestAnimationFrame||function(f){f();})(()=>t.classList.add('show'));
   clearTimeout(toastT);toastT=setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},2200);
 }
 function encodeCfg(){return btoa(unescape(encodeURIComponent(JSON.stringify(S)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}

@@ -130,3 +130,15 @@
 - Bonus: empty-state kalkulator PLTS ditranslasi EN (`data-tr`).
 - Uji jsdom t14 ✓ (wrap tabel) + regresi t9 8/8 & t12 (nama EN) tetap hijau; `node --check` OK.
 - Catatan: grid formulir sudah auto-fit (memecah jadi 1 kolom di <~460px) sejak awal — tidak perlu diubah.
+
+## Iterasi 8 — Bugfix: total harian tidak berjalan meski qty>0 (Okt 22, ~10:00 WIB)
+- **Akar masalah**: state versi lama menyimpan `S.appliances[code]` sebagai angka. Boot memakai fallback
+  `S.appliances[code]||{qty:0,hours:a.hours}` → primitif angka terpakai; penulisan `o.qty=v` pada number **gagal diam-diam** —
+  jadi meski user mengetik qty>0, total & beban puncak tetap 0. **Direproduksi jsdom** (skenario A t17: est tetap 0).
+- **Perbaikan 3 lapis**: (1) normalizer boot — angka → `{qty, hours default}` & objek tak lengkap → lengkap;
+  (2) handler input memaksa objek (`cur&&typeof cur==='object'`); (3) `energyOf` menerima angka-lama sebagai qty.
+- **Tombol Reset** 🔄 di kartu 3 & kartu PLTS: mengosongkan alat + input manual Wh/W + sun 4.5 (jsdom t18: 2.160→0 ✓).
+- Perilaku pamungkas yang bisa membingungkan juga ditangani: bila **total manual (Wh)** pernah diisi, angka alat tidak
+  mengubah tampilan (override). Label sudah mengindikasikan; kini ada cara reset yang jelas.
+- Guard kecil `toast()`: `requestAnimationFrame` di-fallback agar tidak pernah error.
+- Uji: t17 ✓ (A/B/C), t18 ✓, t9 8/8 ✓; `node --check` OK.
