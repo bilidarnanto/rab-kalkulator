@@ -179,3 +179,16 @@
 - Bugfix saat applikasi: (1) kunci objek `APL-TV` dsb. mengandung strip → wajib dikutip `'APL-TV'` di JS;
   (2) handler `pick` mengembalikan lebih awal sebelum cabang buy; (3) normalizer state lama membuang `buy`.
 - Uji t21/t21b ✓ (chip muncul selektif, row RAB qty 2, reset bersih, FT mapping, EN "to RAB"); t9/t12/t17/t18/t19/t20 hijau.
+
+## Iterasi 12 — Semua perlengkapan bisa dicentang (feedback admin, Okt 22, ~13:15 WIB)
+- Admin: "tidak semua bisa dicentang, maksudku seperti item add-on" → chip 🛒 kini ada di **SEMUA 19 baris alat**.
+- Yang ada padanan katalog (11 alat): harga katalog vendor langsung (mis. Kulkas RP4,5 jt × unit).
+  Yang tidak ada di katalog (Lampu LED, Kipas, Laptop, HP, Rice Cooker, Microwave, Blender, Toaster):
+  tetap bisa dicentang — masuk grup PERALATAN sebagai **baris "harga menyusul — dikonfirmasi admin"**
+  (kolom harga/subtotal "—", TIDAK menghitung total; tidak mengarang harga sesuai kaidah riset).
+- Catatan kaki hasil bila ada baris menyusul: "N peralatan belum punya harga katalog — admin EcoPower
+  menetapkan harganya saat pemesanan (belanja manual)".
+- WhatsApp (:waText) kini membawa baris "Belanja peralatan: …" — harga katalog atau "harga menyusul" per item + qty.
+- Tooltip chip tanpa padanan: "harga menyusul, ditetapkan admin EcoPower saat pemesanan".
+- Uji t22/t22b ✓ (19/19 chip, baris Blender & Rice Cooker menyusul, grand total tak berubah, footnote, title chip);
+  regresi t9/t17/t18/t19/t20/t21 hijau.

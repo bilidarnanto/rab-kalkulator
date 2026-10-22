@@ -441,7 +441,9 @@ function buildRabLines(s){
     if(s.materialCode)push(s.materialCode,'INTERIOR');
     for(const a of s.addonCodes)push(a,GRP[A_MAP[a]?.category]??'PERALATAN');
     for(const a of DATA.appliances||[]){const st=s.appliances&&s.appliances[a.code];
-      if(st&&st.buy){const code=buyAdCode(a.code,vehicleT(s.vehicleType));if(code&&A_MAP[code])push(code,'PERALATAN',Math.max(1,st.qty||1));}}
+      if(st&&st.buy){const q=Math.max(1,st.qty||1);const code=buyAdCode(a.code,vehicleT(s.vehicleType));
+        if(code&&A_MAP[code])push(code,'PERALATAN',q);
+        else{i++;lines.push({code:a.code,name:a.name,nameEn:a.nameEn||'',category:'PERALATAN',price:0,unit:'unit',group:'PERALATAN',qty:q,subtotal:0,pending:true});}}}
   }
   const e=energyOf(s); let plts=null;
   if((s.includePlts&&s.vehicleType!=='plts')||s.vehicleType==='plts'){
@@ -595,8 +597,10 @@ function renderApls(id){
   for(const a of DATA.appliances){
     const st=S.appliances[a.code];
     const bcode=S.vehicleType==='plts'?buyAdCode(a.code,'CV'):buyAdCode(a.code,suf(S.vehicleType));
-    const buyChip=bcode?'<label class="buychk" title="'+(A_MAP[bcode]?T('🛒 belanja item ini: |🛒 purchase this item: ')+fmt(A_MAP[bcode].price)+' / '+esc(A_MAP[bcode].unit)+' (+'+(a.watts)+' W)':'')+'">'+
-      '<input type="checkbox" data-buy="'+a.code+'" '+(st&&st.buy?'checked':'')+'>'+T('🛒 ke RAB|🛒 to RAB')+'</label>':'';
+    const buyChip='<label class="buychk" title="'+(bcode&&A_MAP[bcode]
+      ?T('🛒 belanja item ini: |🛒 purchase this item: ')+fmt(A_MAP[bcode].price)+' / '+esc(A_MAP[bcode].unit)+' (+'+(a.watts)+' W)'
+      :T('🛒 masuk RAB — harga menyusul, ditetapkan admin EcoPower saat pemesanan.|🛒 goes to RAB — price set by the EcoPower admin at order time.'))+'">'+
+      '<input type="checkbox" data-buy="'+a.code+'" '+(st&&st.buy?'checked':'')+'>'+T('🛒 ke RAB|🛒 to RAB')+'</label>';
     box.insertAdjacentHTML('beforeend',
       '<div class="apl"><span class="nm">'+esc(tn(a))+buyChip+'</span><span class="w">'+a.watts+' W</span>'+
       '<input type="number" min="0" value="'+(st&&st.qty>0?st.qty:0)+'" data-q="'+a.code+'" title="unit">'+
@@ -680,11 +684,15 @@ function rabHtml(){
     const gkT=({STRUKTUR:'Struktur|Structure',INTERIOR:'Interior',PERALATAN:'Peralatan|Equipment',PLTS:'PLTS',LISTRIK:'Listrik|Electrical',PLUMBING:'Plumbing',JASA:'Jasa|Services'})[gk]||gk;
     h+='<tr><td colspan="4" class="gw" style="font-weight:700">'+T(gkT)+'</td><td class="r" style="font-weight:700">'+fmt(g.reduce((a,L)=>a+L.subtotal,0))+'</td></tr>';
     for(const L of g){
-      h+='<tr><td>'+esc(tn(L.name))+'<div class="mut">'+esc(L.code)+(L.spec?' · '+esc(L.spec):'')+'</div></td>'+
-        '<td class="r">'+fmt(L.price)+'</td><td class="r">'+L.qty+'</td><td class="r mut">'+esc(L.unit)+'</td><td class="r">'+fmt(L.subtotal)+'</td></tr>';
+      h+='<tr><td>'+esc(tn(L.name))+'<div class="mut">'+esc(L.code)+(L.spec?' · '+esc(L.spec):'')+(L.pending?' · <b>'+T('harga menyusul — dikonfirmasi admin|price TBC — confirmed by admin')+'</b>':'')+'</div></td>'+
+        (L.pending?'<td class="r mut" title="'+T('Harga menyusul: admin EcoPower menetapkan harga saat pemesanan.|Price TBC: EcoPower admin sets it at order time.')+'">—</td>'
+                  :'<td class="r">'+fmt(L.price)+'</td>')+
+        '<td class="r">'+L.qty+'</td><td class="r mut">'+esc(L.unit)+'</td><td class="r">'+(L.pending?'<span class="mut">'+T('— menyusul|— TBC')+'</span>':fmt(L.subtotal))+'</td></tr>';
     }
   }
   h+='</tbody></table>';
+  const pend=lines.filter(L=>L.pending);
+  if(pend.length)h+='<p class="mut mini">'+T('⚠️ '+pend.length+' peralatan dicentang belum punya harga katalog (blender, microwave, dsb.) — TIDAK ikut menghitung total. Admin EcoPower menetapkan harganya saat pemesanan (belanja manual).|⚠️ '+pend.length+' ticked appliances have no catalog price yet (blender, microwave, etc.) — NOT counted in the total. The EcoPower admin sets the price at order time (manual purchase).')+'</p>';
   const adv=S.vehicleType==='plts'?null:advancedBreakdown(S,lines);
   if(adv){
     const a=adv;
@@ -1025,6 +1033,11 @@ function waText(){
     S.materialCode?'Material: '+nm(S.materialCode):'',
     S.addonCodes.length?'Add-on: '+S.addonCodes.map(nm).join(', '):'']
   );
+  const buys=(DATA.appliances||[]).filter(a=>{const st=S.appliances[a.code];return st&&st.buy;});
+  if(buys.length)akt.push(T('Belanja peralatan: |Equipment purchase: ')+buys.map(a=>{const st=S.appliances[a.code];
+    const bcode=buyAdCode(a.code,vehicleT(S.vehicleType));
+    const q=Math.max(1,st.qty||1);
+    return bcode&&A_MAP[bcode]?tn(A_MAP[bcode])+' ×'+q+' ('+fmt(A_MAP[bcode].price)+')':tn(a)+' ×'+q+' ('+T('harga menyusul|price TBC')+')';}).join(', '));
   if((S.includePlts||S.vehicleType==='plts')&&plts)akt.push(
     'PLTS: '+plts.pWp+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp), baterai '+
     plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh, inverter '+num(plts.inverter.specs,'watts')+' W, MPPT '+num(plts.scc.specs,'amps')+' A');
