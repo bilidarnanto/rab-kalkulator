@@ -156,3 +156,12 @@
   + DATA membawa `updated`; tooltip `uph` di sel harga baris RAB via `_upd`.
 - Catatan penggunaan alat: "W & jam default = estimasi standar bengkel; sesuaikan jam kebiasaan Anda".
 - Uji jsdom t19 ✓ (chips live, gate ☐/✓, 7 butir asumsi, kolom tanggal, EN penuh); regresi t9/t18/t12 tetap hijau.
+
+## Iterasi 10 — Klarifikasi alur biaya peralatan (pertanyaan admin, Okt 22, ~11:50 WIB)
+- Klarifikasi mesin: daftar alat langkah-3 = **input sizing** (Wh/W → panel/baterai/inverter/MPPT), BUKAN baris biaya;
+  peralatan yang dibeli & dipasang bengkel masuk sebagai item per-unit lewat **add-on langkah-2**.
+- UI baru di kartu 3: (a) penjelasan "daftar ini BUKAN daftar belanjaan — belanja di langkah 2";
+  (b) kotak status live `#pwrNote`: mode belum-ada-beban / PLTS-nonaktif ("belum menambah biaya, centang di langkah 1")
+  / PLTS-aktif ("angka ini MENENTUKAN komponen grup PLTS pada hasil").
+- Butir baru di kotak asumsi (total 8); catatan sizing ditambah tepat di bawah header "Sistem PLTS terpilih" pada hasil RAB.
+- Uji t20 ✓ 5 skenario (off/on/note EN/butir asumsi); t9 tetap hijau.

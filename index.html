@@ -206,6 +206,7 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
     <section class="card pst" id="st3">
       <h2 data-tr="3 · Kebutuhan listrik harian|3 · Daily power needs">3 · Kebutuhan listrik harian</h2>
       <p class="mut mini" data-tr="Watts & jam pemakaian default = estimasi pemakaian standar bengkel — sesuaikan angka jam dengan kebiasaan Anda, agar estimasi benar-benar pas.|Watts & default hours are standard workshop-use estimates — adjust the hours to your real habits so the estimate truly fits.">Watts & jam pemakaian default = estimasi pemakaian standar bengkel — sesuaikan angka jam dengan kebiasaan Anda, agar estimasi benar-benar pas.</p>
+      <p class="mut mini" data-tr="📍 Daftar ini (form W·jam/hari) BUKAN daftar barang belanjaan — ia hanya menghitung kebutuhan energi (Wh/W) untuk penentuan panel & baterai. Peralatan yang mau dibeli & dipasang bengkel (kulkas, AC, pompa, dsb.) = centang di LANGKAH 2 (add-on), di situ muncul sebagai biaya per unit.|📍 This list (the W · h/day form) is NOT a shopping list — it only computes the energy demand (Wh/W) used to size panels & battery. Equipment you want bought & installed (fridge, AC, pump, etc.) = tick it in STEP 2 (add-ons), where it appears as a per-unit cost.">📍 Daftar ini (form W·jam/hari) BUKAN daftar barang belanjaan — ia hanya menghitung kebutuhan energi (Wh/W) untuk penentuan panel & baterai. Peralatan yang mau dibeli & dipasang bengkel (kulkas, AC, pompa, dsb.) = centang di LANGKAH 2 (add-on), di situ muncul sebagai biaya per unit.</p>
       <div id="apls"></div>
       <div class="grid" style="margin-top:10px">
         <div><label data-tr="Total harian manual (Wh)|Manual daily total (Wh)">Total harian manual (Wh)</label><input id="mWh" type="number" min="0" placeholder="otomatis"></div>
@@ -213,6 +214,7 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
         <div><label data-tr="Peak sun hour harian (1–7)|Daily peak sun hours (1–7)">Peak sun hour harian (1–7)</label><input id="sun" type="number" step="0.1" min="1" max="7" value="4.5"></div>
       </div>
       <div class="note" id="espEst"></div>
+      <p class="mut mini no-print" id="pwrNote"></p>
       <div style="margin-top:8px" class="no-print"><button class="btn ghost mini" onclick="resetLoads()" data-tr="🔄 Reset beban & input manual|🔄 Reset loads & manual inputs">🔄 Reset beban & input manual</button></div>
       <div class="gob no-print"><button class="btn ghost mini" onclick="goStep('rabOut')" data-tr="Lihat hasil estimasi RAB ↓|View the RAB estimate ↓">Lihat hasil estimasi RAB ↓</button></div>
     </section>
@@ -567,6 +569,7 @@ function rabHtml(){
     '<li>'+T('Faktor kompleksitas 0,80–1,30 (level custom layout/finishing).|Complexity factor 0.80–1.30 (custom layout/finish level).')+'</li>'+
     '<li>'+T('Diskon volume 3%/2%/1% bila subtotal grup besar; kontingensi 3–10% (besaran disepakati admin sebelum final).|Volume discount 3%/2%/1% on large group subtotals; contingency 3–10% (agreed with the admin before final).')+'</li>'+
     '<li>'+T('PPN 11%; margin bengkel sistem PLTS 15% (mencakup perakitan, pengujian, dan garansi pengerjaan).|VAT 11%; solar-system workshop margin 15% (assembly, testing and workmanship warranty).')+'</li>'+
+    '<li>'+T('Daftar alat (langkah 3) bukan biaya: hanya menentukan sizing PLTS. Belanja peralatan (dibayar per unit) dicentang di langkah 2.|The appliance list (step 3) is not a cost: it only sizes the solar system. Equipment purchases (paid per unit) are ticked in step 2.')+'</li>'+
     '<li>'+T('Estimasi berlaku 30 hari — angka final dikonfirmasi admin EcoPower.|Estimates valid 30 days — final figures are confirmed by the EcoPower admin.')+'</li></ul></details>';
   const groups={};
   for(const L of lines)(groups[L.group]=groups[L.group]||[]).push(L);
@@ -603,7 +606,7 @@ function rabHtml(){
   }
   if(plts){
     const kgn=lines.reduce((a,L)=>a+(L.weightKg||0)*L.qty,0);
-    h+='<h3>Sistem PLTS terpilih</h3><div class="note">'+esc(plts.pWp)+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp) · '+
+    h+='<h3>Sistem PLTS terpilih</h3><p class="mut mini">'+T('Pos biaya ini diukur dari kebutuhan listrik harian Anda (langkah 3) — ubah jam pemakaian/jumlah unit, biaya panel-baterai ikut menyesuaikan.|This cost block is sized from your daily power needs (step 3) — change usage hours/units and the panel & battery costs follow.')+'</p><div class="note">'+esc(plts.pWp)+' Wp ('+plts.pQty+'× '+num(plts.panel.comp.specs,'wp')+' Wp) · '+
       plts.bQty+'× '+plts.bAh+' Ah ≈ '+(plts.batWh/1000).toFixed(1)+' kWh · inverter '+num(plts.inverter.specs,'watts')+' W · MPPT '+num(plts.scc.specs,'amps')+' A'+(kgn?T(' · berat ±| · weight ±')+fmt0(kgn)+' kg':'')+'</div>';
     h+=viabilityHtml(plts);
     const n=optimNotes(plts);
@@ -633,7 +636,17 @@ function renderStepBar(){
   bar.innerHTML=its.map(it=>'<button class="sb'+(it[2]?' ok':'')+'" onclick="goStep(\''+it[3]+'\')">'+
     (it[2]?'✓ ':'● ')+it[0]+'. '+T(it[1])+(it[2]?'':' <span class=\'pop\'>'+T('isi duluan|fill this first')+'</span>')+'</button>').join('');
 }
-function update(){$('#rabOut').innerHTML=rabHtml();updateEst();renderStepBar();}
+function updatePwrNote(){
+  const el=$('#pwrNote'); if(!el)return;
+  const e=energyOf(S);
+  const active=S.includePlts&&S.vehicleType!=='plts', solo=S.vehicleType==='plts';
+  if(e.dailyWh<=0){el.className='mut mini no-print';el.innerHTML=T('Belum ada beban — angka ini mengukur kebutuhan listrik (Wh/W), bukan biaya bengkel.|No load yet — these figures measure power demand (Wh/W), not workshop cost.');return;}
+  if(active||solo){el.className='note mini';
+    el.innerHTML='⚡ '+T('Angka di atas MENENTUKAN komponen PLTS pada hasil: panel Wp, kWh baterai, inverter & MPPT — biaya muncul di grup “PLTS”.|The figures above SIZE the solar components in the result: panel Wp, battery kWh, inverter & MPPT — the cost shows under the “Solar” group.');}
+  else{el.className='mut mini no-print';
+    el.innerHTML=T('Saat ini angka ini belum menambah biaya bengkel — centang “Sistem PLTS (listrik mandiri)” di langkah 1 untuk mengubahnya menjadi panel + baterai + inverter yang dibeli.|Right now these figures add no workshop cost — tick “Solar system (independent power)” in step 1 to turn them into purchasable panels + battery + inverter.');}
+}
+function update(){$('#rabOut').innerHTML=rabHtml();updateEst();updatePwrNote();renderStepBar();}
 
 function renderAll(){renderVeh();renderSteps();renderAddons();update();}
 
