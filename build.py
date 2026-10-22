@@ -49,7 +49,7 @@ AP_EN = {
 DATA = {
     "components": [
         {
-            "code": c["code"], "name": c["nameId"], "nameEn": c.get("nameEn") or "", "category": c["category"],
+            "code": c["code"], "name": c["nameId"], "nameEn": c.get("nameEn") or "", "updated": c.get("priceUpdatedAt") or "", "category": c["category"],
             "unit": c["unit"], "price": c["price"], "specs": c.get("specs") or {},
         }
         for c in CAT
@@ -177,6 +177,19 @@ body.dark .toast{outline:1px solid #334155}
 @media print{body.dark{background:#fff!important;color:#1e293b}
 body.dark .card,body.dark th,body.dark .gw{background:#fff!important;color:#1e293b!important}}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.sb{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:12.5px;cursor:pointer;color:#334155}
+.sb.ok{border-color:var(--acc);color:var(--bch);background:#eef7ef}
+.sb .pop{opacity:.55;font-size:11.5px}
+.gob{margin-top:10px}
+.src{border:1px dashed var(--line);border-radius:9px;padding:8px 12px;margin:10px 0;background:#fff;font-size:13px}
+.src summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--bch)}
+.src ul{margin:6px 0 2px 18px;padding:0}
+.src li{margin:2px 0;line-height:1.45;font-size:12.5px;color:#475569}
+body.dark .sb{background:#122031;border-color:#243449;color:#dbe6f1}
+body.dark .sb.ok{background:#15331f;border-color:var(--acc);color:#8fdca3}
+body.dark .src{background:#122031;border-color:#243449;color:#dbe6f1}
+body.dark .src li{color:#9db1c5}
 @media (max-width:640px){
 body{font-size:14.5px}
 header{padding:10px 12px;gap:8px}
@@ -235,8 +248,9 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
 </nav>
 
 <div id="tab-conf">
+  <div id="stepBar" class="steps no-print"></div>
   <div class="grid">
-    <section class="card pst">
+    <section class="card pst" id="st1">
       <h2 data-tr="1 · Tipe & paket|1 · Type & package">1 · Tipe & paket</h2>
       <div class="opt" id="vehList"></div>
       <label data-tr="Paket konversi|Conversion package">Paket konversi</label><select id="pkg"></select>
@@ -248,13 +262,16 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
       <div class="chk"><input type="checkbox" id="optSizing">
         <div><b data-tr="Optimasi sizing komponen PLTS|Optimize solar component sizing">Optimasi sizing komponen PLTS</b>
         <div class="mut" data-tr="Cari kombinasi unit terhemat (Rp/Wh & Rp/Wp terendah) yang memenuhi kebutuhan.|Find the cheapest unit mix (lowest Rp/Wh & Rp/Wp) that meets the demand.">Cari kombinasi unit terhemat (Rp/Wh & Rp/Wp terendah) yang memenuhi kebutuhan.</div></div></div>
+      <div class="gob no-print"><button class="btn ghost mini" onclick="goStep('st2')" data-tr="Lanjut ke langkah 2: kelengkapan →|Continue to step 2: extras →">Lanjut ke langkah 2: kelengkapan →</button></div>
     </section>
-    <section class="card pst">
+    <section class="card pst" id="st2">
       <h2 data-tr="2 · Kelengkapan (add-on)|2 · Extras (add-ons)">2 · Kelengkapan (add-on)</h2>
       <div id="addons"></div>
+      <div class="gob no-print"><button class="btn ghost mini" onclick="goStep('st3')" data-tr="Lanjut ke langkah 3: kebutuhan listrik →|Continue to step 3: power needs →">Lanjut ke langkah 3: kebutuhan listrik →</button></div>
     </section>
-    <section class="card pst">
+    <section class="card pst" id="st3">
       <h2 data-tr="3 · Kebutuhan listrik harian|3 · Daily power needs">3 · Kebutuhan listrik harian</h2>
+      <p class="mut mini" data-tr="Watts & jam pemakaian default = estimasi pemakaian standar bengkel — sesuaikan angka jam dengan kebiasaan Anda, agar estimasi benar-benar pas.|Watts & default hours are standard workshop-use estimates — adjust the hours to your real habits so the estimate truly fits.">Watts & jam pemakaian default = estimasi pemakaian standar bengkel — sesuaikan angka jam dengan kebiasaan Anda, agar estimasi benar-benar pas.</p>
       <div id="apls"></div>
       <div class="grid" style="margin-top:10px">
         <div><label data-tr="Total harian manual (Wh)|Manual daily total (Wh)">Total harian manual (Wh)</label><input id="mWh" type="number" min="0" placeholder="otomatis"></div>
@@ -263,6 +280,7 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
       </div>
       <div class="note" id="espEst"></div>
       <div style="margin-top:8px" class="no-print"><button class="btn ghost mini" onclick="resetLoads()" data-tr="🔄 Reset beban & input manual|🔄 Reset loads & manual inputs">🔄 Reset beban & input manual</button></div>
+      <div class="gob no-print"><button class="btn ghost mini" onclick="goStep('rabOut')" data-tr="Lihat hasil estimasi RAB ↓|View the RAB estimate ↓">Lihat hasil estimasi RAB ↓</button></div>
     </section>
   </div>
   <section class="card sticky" id="rabOut"></section>
@@ -291,7 +309,7 @@ body[data-tab="cat"] #tab-conf,body[data-tab="cat"] #tab-apl{display:none!import
     <h2 data-tr="Harga komponen — katalog vendor (real, Aug 2026)|Component prices — vendor catalog (real, Aug 2026)">Harga komponen — katalog vendor (real, Aug 2026)</h2>
     <input id="catQ" type="text" placeholder="Cari nama / kode…">
     <div id="catFilter" style="margin:10px 0"></div>
-    <table><thead><tr><th style="width:112px" data-tr="Kode|Code">Kode</th><th class="r" data-tr="Harga satuan|Unit price">Harga satuan</th><th style="width:66px" data-tr="Satuan|Unit">Satuan</th><th data-tr="Nama|Name">Nama</th><th style="width:96px" data-tr="Kategori|Category">Kategori</th></tr></thead><tbody id="catBody"></tbody></table>
+    <table><thead><tr><th style="width:112px" data-tr="Kode|Code">Kode</th><th class="r" data-tr="Harga satuan|Unit price">Harga satuan</th><th style="width:66px" data-tr="Satuan|Unit">Satuan</th><th data-tr="Nama|Name">Nama</th><th style="width:96px" data-tr="Kategori|Category">Kategori</th><th class="r" style="width:84px" data-tr="Tgl harga|Price date">Tgl harga</th></tr></thead><tbody id="catBody"></tbody></table>
     <p class="mut" data-tr="Sumber: API /api/catalog situs referensi (Aug 2026) · banding riset & optimasi: RESEARCH.md.|Source: /api/catalog API of the reference site (Aug 2026) · price research & optimization: see RESEARCH.md.">Sumber: API <code>/api/catalog</code> situs referensi (Aug 2026) · banding riset & optimasi: <code>RESEARCH.md</code>.</p>
   </section>
 </div>
@@ -602,7 +620,20 @@ function rabHtml(){
   const {lines,plts}=buildRabLines(S);
   let h='<h2>'+T('Rincian RAB |RAB breakdown ')+'<span class="tag mode">'+(S.vehicleType==='plts'?'PLTS':({
     campervan:'Campervan',motorhome:'Motorhome',foodtruck:'Food Truck'}[S.vehicleType]))+'</span></h2>';
-  if(!lines.length){return h+'<div class="warn">'+T('Pilih paket konversi atau aktifkan PLTS dahulu.|Choose a conversion package or enable solar first.')+'</div>';}
+  if(!lines.length){
+    const ok1=!!(S.vehicleType==='plts'||(S.packageCode&&A_MAP[S.packageCode])),ok3=energyOf(S).dailyWh>0;
+    return h+'<div class="warn">'+T('Estimasi muncul otomatis setelah 2 langkah ini:|The estimate appears automatically after these 2 steps:')+
+      '<div style="margin-top:4px">'+(ok1?'✓':'☐')+T(' Langkah 1: pilih paket konversi (atau tipe & PLTS).| Step 1: pick a conversion package (or vehicle type + solar).')+'</div>'+
+      '<div>'+(ok3?'✓':'☐')+T(' Langkah 3: isi jumlah unit & jam pemakaian minimal 1 peralatan (atau total manual).| Step 3: enter units & hours for at least one appliance (or a manual total).')+'</div>'+
+      '<div class="mut mini" style="margin-top:4px">'+T('Gunakan tombol “Lanjut ke langkah …” agar urutannya jelas.|Use the “Continue to step …” buttons to keep the order clear.')+'</div></div>';}
+  h+='<details class="src"><summary>'+T('📋 Dasar & asumsi perhitungan (bisa diperiksa)|📋 Calculation basis & assumptions (verifiable)')+'</summary><ul>'+
+    '<li>'+T('Harga: katalog vendor (Aug 2026) + verifikasi pasar (Okt 2026) — tanggal harga per komponen tertulis di tab Tabel Harga.|Prices: vendor catalog (Aug 2026) + market check (Oct 2026) — per-component price dates are listed in the Price List tab.')+'</li>'+
+    '<li>'+T('Tenaga kerja: Rp75.000/jam × 8 jam/hari, jumlah hari mengikuti hari kerja vendor per paket.|Labor: Rp75,000/h × 8 h/day; day counts follow the vendor working-days per package.')+'</li>'+
+    '<li>'+T('Limbah material per kelompok: Struktur 12% · Interior 8% · Peralatan 3% · PLTS 2% · Listrik & Pipa 5%.|Material waste per group: Structure 12% · Interior 8% · Equipment 3% · Solar 2% · Electrical & plumbing 5%.')+'</li>'+
+    '<li>'+T('Faktor kompleksitas 0,80–1,30 (level custom layout/finishing).|Complexity factor 0.80–1.30 (custom layout/finish level).')+'</li>'+
+    '<li>'+T('Diskon volume 3%/2%/1% bila subtotal grup besar; kontingensi 3–10% (besaran disepakati admin sebelum final).|Volume discount 3%/2%/1% on large group subtotals; contingency 3–10% (agreed with the admin before final).')+'</li>'+
+    '<li>'+T('PPN 11%; margin bengkel sistem PLTS 15% (mencakup perakitan, pengujian, dan garansi pengerjaan).|VAT 11%; solar-system workshop margin 15% (assembly, testing and workmanship warranty).')+'</li>'+
+    '<li>'+T('Estimasi berlaku 30 hari — angka final dikonfirmasi admin EcoPower.|Estimates valid 30 days — final figures are confirmed by the EcoPower admin.')+'</li></ul></details>';
   const groups={};
   for(const L of lines)(groups[L.group]=groups[L.group]||[]).push(L);
   h+='<h3>'+T('Rincian per kelompok|Breakdown by group')+'</h3><table><thead><tr><th style="text-align:left">'+T('Komponen|Component')+'</th><th class="r">'+T('Harga|Price')+'</th><th class="r" width="52">Qty</th><th class="r" width="70">'+T('Satuan|Unit')+'</th><th class="r">Subtotal</th></tr></thead><tbody>';
@@ -656,7 +687,19 @@ function rabHtml(){
      '<button class="btn ghost no-print" onclick="window.print()">'+T('🖨️ Cetak / simpan PDF|🖨️ Print / save PDF')+'</button>';
   return h;
 }
-function update(){$('#rabOut').innerHTML=rabHtml();updateEst();}
+function goStep(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function renderStepBar(){
+  const bar=$('#stepBar'); if(!bar)return;
+  const e=energyOf(S);
+  const ok1=!!(S.vehicleType==='plts'||(S.packageCode&&A_MAP[S.packageCode]));
+  const ok3=e.dailyWh>0;
+  const its=[[1,'Tipe & paket|Vehicle & package',ok1,'st1'],
+    [2,'Kelengkapan (opsional)|Extras (optional)',S.addonCodes.length>0,'st2'],
+    [3,'Kebutuhan listrik|Power needs',ok3,'st3']];
+  bar.innerHTML=its.map(it=>'<button class="sb'+(it[2]?' ok':'')+'" onclick="goStep(\''+it[3]+'\')">'+
+    (it[2]?'✓ ':'● ')+it[0]+'. '+T(it[1])+(it[2]?'':' <span class=\'pop\'>'+T('isi duluan|fill this first')+'</span>')+'</button>').join('');
+}
+function update(){$('#rabOut').innerHTML=rabHtml();updateEst();renderStepBar();}
 
 function renderAll(){renderVeh();renderSteps();renderAddons();update();}
 
@@ -666,7 +709,7 @@ function renderCat(){
   const draw=()=>{
     const cat=box.querySelector('input[type=radio]:checked')?.value||'ALL', q=$('#catQ').value.toLowerCase();
     $('#catBody').innerHTML=C.filter(c=>(cat==='ALL'||c.category===cat)&&(!q||c.name.toLowerCase().includes(q)||(c.nameEn||'').toLowerCase().includes(q)||c.code.toLowerCase().includes(q)))
-      .map(c=>'<tr><td class="mut">'+esc(c.code)+'</td><td class="r">'+fmt(c.price)+'</td><td class="mut">'+esc(c.unit)+'</td><td>'+esc(tn(c))+'</td><td class="mut">'+esc(c.category)+'</td></tr>').join('');
+      .map(c=>'<tr><td class="mut">'+esc(c.code)+'</td><td class="r">'+fmt(c.price)+'</td><td class="mut">'+esc(c.unit)+'</td><td>'+esc(tn(c))+'</td><td class="mut">'+esc(c.category)+'</td><td class="mut mini">'+(c.updated?_upd[c.code]||'':'')+'</td></tr>').join('');
   };
   $('#catQ').oninput=draw; box.onchange=draw; draw();
 }
@@ -912,7 +955,7 @@ function renderRiwayat(){
 const LANG=(location.search.match(/[?&]lang=(en|id)\b/)||[])[1]||(function(){try{return localStorage.getItem('rab.lang')||'id';}catch(e){return 'id';}})();
 function T(p){const i=p.indexOf('|');return LANG==='en'&&i>=0?p.slice(i+1):p.slice(0,i<0?p.length:i);}
 /* ---- nama katalog EN (nameId → nameEn dari API referensi) ---- */
-const _EN={};(DATA.components||[]).forEach(c=>{if(c.nameEn)_EN[c.name]=c.nameEn;});
+const _EN={};const _upd={};(DATA.components||[]).forEach(c=>{if(c.nameEn)_EN[c.name]=c.nameEn;if(c.updated)_upd[c.code]=String(c.updated).slice(0,10);});
 (DATA.appliances||[]).forEach(a=>{if(a.nameEn)_EN[a.name]=a.nameEn;});
 function tn(x){if(LANG!=='en')return typeof x==='object'?(x.name||''):x;
   if(typeof x==='object')return x.nameEn||x.name||'';

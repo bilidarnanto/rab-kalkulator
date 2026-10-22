@@ -142,3 +142,17 @@
   mengubah tampilan (override). Label sudah mengindikasikan; kini ada cara reset yang jelas.
 - Guard kecil `toast()`: `requestAnimationFrame` di-fallback agar tidak pernah error.
 - Uji: t17 ✓ (A/B/C), t18 ✓, t9 8/8 ✓; `node --check` OK.
+
+## Iterasi 9 — Alur step-by-step + akuntabilitas data (request admin, Okt 22, ~11:15 WIB)
+- **Stepper**: strip `#stepBar` di atas kartu — 3 langkah ber-status live (✓/●): "1. Tipe & paket" pilih paket/PLTS,
+  "2. Kelengkapan (opsional)", "3. Kebutuhan listrik" update live saat pengguna mengisi; chip yang belum lengkap
+  diberi label "isi duluan"; klik chip → scroll ke kartu. EN/ID penuh (T()).
+- **Tombol "Lanjut ke langkah N →"** di ujung tiap kartu (1→2→3→hasil, scroll smooth) — urutan isian jelas.
+- **Gate-checklist** saat RAB masih kosong: warn berisi ☐/✓ kriteria minimum (paket + beban > 0) + petunjuk pakai tombol lanjut.
+- **Kotak "📋 Dasar & asumsi perhitungan"** (details, 7 butir) di atas hasil RAB: sumber harga katalog vendor Aug 2026
+  + verifikasi pasar Okt 2026, formula kerja Rp75rb×8j, waste per kelompok, kompleksitas 0,80–1,30, diskon volume,
+  kontingensi 3–10% (final oleh admin), PPN 11%, margin PLTS 15%, validitas 30 hari.
+- **Tanggal harga per komponen** kini tampil: kolom "Tgl harga" di tab Tabel Harga (`priceUpdatedAt`, real 2026-08-18 dst.)
+  + DATA membawa `updated`; tooltip `uph` di sel harga baris RAB via `_upd`.
+- Catatan penggunaan alat: "W & jam default = estimasi standar bengkel; sesuaikan jam kebiasaan Anda".
+- Uji jsdom t19 ✓ (chips live, gate ☐/✓, 7 butir asumsi, kolom tanggal, EN penuh); regresi t9/t18/t12 tetap hijau.
